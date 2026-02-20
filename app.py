@@ -181,20 +181,17 @@ class StartupManagerApp:
         frame = ttk.LabelFrame(parent, text=" Aufgaben ",
                                style="Section.TLabelframe", padding=8)
         frame.grid(row=0, column=0, sticky="nsew", padx=(0, 6))
-        frame.rowconfigure(1, weight=1)
-        frame.columnconfigure(0, weight=1)
 
-        # Toolbar
+        # Toolbar – pack, damit kein pack/grid-Konflikt entsteht
         toolbar = ttk.Frame(frame)
-        toolbar.grid(row=0, column=0, sticky="ew", pady=(0, 6))
+        toolbar.pack(fill=tk.X, pady=(0, 6))
         ttk.Button(toolbar, text="+ Neue Aufgabe",
                    command=self._add_task).pack(side=tk.LEFT)
         ttk.Button(toolbar, text="Aktualisieren",
                    command=self._load_data).pack(side=tk.RIGHT)
 
-        # Scrollbarer Bereich
+        # Scrollbarer Bereich (intern pack-basiert)
         self._todo_canvas, self._todo_inner = self._scrollable_frame(frame)
-        self._todo_canvas.grid(row=1, column=0, columnspan=2, sticky="nsew")
 
     # --- Kalender-Panel ---
 
@@ -202,11 +199,8 @@ class StartupManagerApp:
         frame = ttk.LabelFrame(parent, text=" Termine heute ",
                                style="Section.TLabelframe", padding=8)
         frame.grid(row=0, column=1, sticky="nsew", padx=(6, 0))
-        frame.rowconfigure(0, weight=1)
-        frame.columnconfigure(0, weight=1)
 
         self._cal_canvas, self._cal_inner = self._scrollable_frame(frame)
-        self._cal_canvas.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
     # --- Webseiten-Panel ---
 
