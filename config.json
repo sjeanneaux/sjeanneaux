@@ -1,0 +1,28 @@
+{
+  "websites": [
+    {
+      "name": "Google Mail",
+      "url": "https://mail.google.com",
+      "auto_open": false,
+      "enabled": true
+    },
+    {
+      "name": "Google Kalender",
+      "url": "https://calendar.google.com",
+      "auto_open": false,
+      "enabled": true
+    },
+    {
+      "name": "Google News",
+      "url": "https://news.google.com",
+      "auto_open": false,
+      "enabled": false
+    }
+  ],
+  "settings": {
+    "auto_open_on_startup": false,
+    "show_completed_tasks": false,
+    "refresh_interval_minutes": 5,
+    "window_geometry": "980x680+80+80"
+  }
+}
