@@ -37,7 +37,7 @@ DEFAULT_CONFIG = {
 
 
 class ConfigManager:
-    """Laedt und speichert die Konfiguration in config.json."""
+    """Lädt und speichert die Konfiguration in config.json."""
 
     def __init__(self):
         self.config_path = Path(__file__).parent / "config.json"

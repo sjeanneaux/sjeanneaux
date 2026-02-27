@@ -50,6 +50,7 @@ class StartupManagerApp:
         self._task_vars: dict[str, tuple[tk.BooleanVar, str]] = {}
         self._website_vars: dict[str, tk.BooleanVar] = {}
         self._refresh_job = None
+        self._clock_job = None
 
         self._setup_window()
         self._apply_style()
@@ -75,6 +76,7 @@ class StartupManagerApp:
         self.root.minsize(720, 500)
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.bind("<F5>", lambda _: self._load_data())
+        self.root.bind("<Escape>", lambda _: self._on_close())
 
     def _apply_style(self):
         s = ttk.Style()
@@ -156,24 +158,45 @@ class StartupManagerApp:
         bar.add_cascade(label="Hilfe", menu=m)
         m.add_command(label="Über Startup Manager", command=self._show_about)
 
+    @staticmethod
+    def _get_greeting(now: datetime) -> str:
+        if now.hour < 12:
+            return "Guten Morgen!"
+        if now.hour < 18:
+            return "Guten Tag!"
+        return "Guten Abend!"
+
     def _build_header(self, parent):
         row = ttk.Frame(parent)
         row.pack(fill=tk.X)
 
         now = datetime.now()
-        greeting = (
-            "Guten Morgen!"  if now.hour < 12 else
-            "Guten Tag!"     if now.hour < 18 else
-            "Guten Abend!"
-        )
-        ttk.Label(row, text=greeting, font=FONT_TITLE).pack(side=tk.LEFT)
+        self._greeting_var = tk.StringVar(value=self._get_greeting(now))
+        ttk.Label(row, textvariable=self._greeting_var,
+                  font=FONT_TITLE).pack(side=tk.LEFT)
 
-        date_str = (
+        right = ttk.Frame(row)
+        right.pack(side=tk.RIGHT, anchor=tk.S)
+
+        self._date_var = tk.StringVar()
+        ttk.Label(right, textvariable=self._date_var, font=FONT_SMALL,
+                  foreground=C["text2"]).pack(anchor=tk.E)
+
+        self._clock_var = tk.StringVar()
+        ttk.Label(right, textvariable=self._clock_var, font=FONT_TIME,
+                  foreground=C["accent"]).pack(anchor=tk.E)
+
+        self._update_clock()
+
+    def _update_clock(self):
+        now = datetime.now()
+        self._greeting_var.set(self._get_greeting(now))
+        self._date_var.set(
             f"{WEEKDAYS[now.weekday()]}, "
             f"{now.day}. {MONTHS[now.month - 1]} {now.year}"
         )
-        ttk.Label(row, text=date_str, font=FONT_SMALL,
-                  foreground=C["text2"]).pack(side=tk.RIGHT, anchor=tk.S)
+        self._clock_var.set(now.strftime("%H:%M"))
+        self._clock_job = self.root.after(30_000, self._update_clock)
 
     # --- Aufgaben-Panel ---
 
@@ -271,7 +294,7 @@ class StartupManagerApp:
     def _fetch(self):
         try:
             events = self.google.get_today_events()
-            tasks  = self.google.get_tasks(
+            tasks = self.google.get_tasks(
                 self.config.get_settings().get("show_completed_tasks", False)
             )
             self.root.after(0, lambda: self._render_calendar(events))
@@ -537,6 +560,8 @@ class StartupManagerApp:
     def _on_close(self):
         if self._refresh_job:
             self.root.after_cancel(self._refresh_job)
+        if self._clock_job:
+            self.root.after_cancel(self._clock_job)
         self.config.update_settings(window_geometry=self.root.geometry())
         self.root.destroy()
 
