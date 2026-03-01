@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTP Workboard</title>
+  <style>
+    /* ===== CSS CUSTOM PROPERTIES ===== */
+    :root {
+      --bg: #0d0d14;
+      --surface: #161622;
+      --surface2: #1e1e30;
+      --surface3: #26263d;
+      --border: #2e2e4a;
+      --border-hover: #4a4a70;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --accent-dim: rgba(99,102,241,0.12);
+      --text: #e2e8f0;
+      --text-muted: #8892a4;
+      --text-faint: #4a5568;
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,0.12);
+      --orange: #f97316;
+      --orange-dim: rgba(249,115,22,0.12);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,0.12);
+      --yellow: #eab308;
+      --yellow-dim: rgba(234,179,8,0.12);
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.5);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.7);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ===== SCROLLBARS ===== */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      height: 54px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      z-index: 200;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--text);
+      white-space: nowrap;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .nav-sep {
+      width: 1px;
+      height: 22px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .board-tabs {
+      display: flex;
+      gap: 3px;
+    }
+
+    .board-tab {
+      padding: 5px 13px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .board-tab:hover { background: var(--surface2); color: var(--text); }
+    .board-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .view-switcher {
+      display: flex;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .view-btn {
+      padding: 4px 11px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      transition: all 0.15s;
+      letter-spacing: 0.2px;
+    }
+    .view-btn:hover { color: var(--text); }
+    .view-btn.active {
+      background: var(--surface3);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+
+    .search-wrap { position: relative; }
+    .search-icon {
+      position: absolute;
+      left: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 13px;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 240px;
+      padding: 6px 10px 6px 28px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: all 0.15s;
+    }
+    .search-input:focus { border-color: var(--accent); width: 280px; }
+    .search-input::placeholder { color: var(--text-faint); }
+
+    .ml-auto { margin-left: auto; }
+    .nav-actions { display: flex; gap: 6px; align-items: center; }
+
+    .btn {
+      padding: 6px 13px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--surface3); border-color: var(--border-hover); }
+    .btn-danger { background: var(--red); color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 4px 9px; font-size: 12px; }
+
+    /* ===== FILTER BAR ===== */
+    .filter-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 7px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .filter-select {
+      padding: 4px 9px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .filter-select:focus { border-color: var(--accent); }
+
+    .tag-filter-group { display: flex; gap: 5px; flex-wrap: wrap; }
+
+    .filter-tag {
+      padding: 3px 9px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-tag:hover { border-color: var(--border-hover); color: var(--text); }
+    .filter-tag.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .active-filter-count {
+      background: var(--red);
+      color: #fff;
+      border-radius: 20px;
+      padding: 1px 6px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* ===== MAIN ===== */
+    .main {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ===== KANBAN ===== */
+    .kanban-view {
+      height: 100%;
+      display: flex;
+      gap: 10px;
+      padding: 14px;
+      overflow-x: auto;
+    }
+
+    .kanban-col {
+      flex-shrink: 0;
+      width: 272px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      max-height: 100%;
+      transition: border-color 0.15s;
+    }
+
+    .kanban-col.drag-over {
+      border-color: var(--accent);
+      background: var(--surface2);
+    }
+
+    .col-header {
+      padding: 11px 13px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .col-icon { font-size: 15px; }
+
+    .col-title {
+      font-weight: 700;
+      font-size: 13px;
+      flex: 1;
+    }
+
+    .col-count {
+      background: var(--surface3);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 1px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    .col-add {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .col-add:hover { background: var(--surface3); color: var(--text); }
+
+    /* Column accent stripes */
+    .col-Backlog .col-title { color: var(--text-muted); }
+    .col-DieseWoche .col-title { color: #a5b4fc; }
+    .col-Heute .col-title { color: #fdba74; }
+    .col-Waiting .col-title { color: #fde047; }
+    .col-Done .col-title { color: #86efac; }
+
+    .col-Heute .col-header { border-bottom-color: rgba(249,115,22,0.25); }
+    .col-Done .col-header { border-bottom-color: rgba(34,197,94,0.25); }
+
+    .col-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-height: 60px;
+    }
+
+    /* ===== TASK CARD ===== */
+    .task-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px 9px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .task-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+    }
+    .task-card.a-grün::before { background: var(--green); }
+    .task-card.a-orange::before { background: var(--orange); }
+    .task-card.a-rot::before { background: var(--red); }
+
+    .task-card:hover {
+      border-color: var(--border-hover);
+      background: var(--surface3);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .task-card.dragging { opacity: 0.35; transform: scale(0.97); }
+
+    .card-actions {
+      position: absolute;
+      top: 6px; right: 6px;
+      display: none;
+      gap: 3px;
+    }
+    .task-card:hover .card-actions { display: flex; }
+
+    .card-act-btn {
+      width: 20px; height: 20px;
+      border-radius: 4px;
+      border: none;
+      background: var(--surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 11px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .card-act-btn:hover { background: var(--border); color: var(--text); }
+    .card-act-btn.del:hover { background: var(--red-dim); color: var(--red); }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      margin-bottom: 7px;
+      padding-right: 28px;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .owner-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .avatar {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      color: #fff;
+      font-size: 8px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .due-chip {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .due-chip.overdue { color: var(--red); font-weight: 600; }
+    .due-chip.soon { color: var(--orange); font-weight: 600; }
+
+    .tag-chip {
+      padding: 2px 6px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .tag-Report   { background: var(--red-dim); color: #fca5a5; }
+    .tag-Analyse  { background: rgba(59,130,246,0.12); color: #93c5fd; }
+    .tag-Budget   { background: var(--green-dim); color: #86efac; }
+    .tag-Meeting  { background: var(--orange-dim); color: #fdba74; }
+
+    .ampel-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+    .ampel-dot.grün   { background: var(--green); box-shadow: 0 0 5px var(--green); }
+    .ampel-dot.orange { background: var(--orange); box-shadow: 0 0 5px var(--orange); }
+    .ampel-dot.rot    { background: var(--red); box-shadow: 0 0 5px var(--red); }
+
+    /* ===== LIST & TABLE VIEW ===== */
+    .list-view, .table-view {
+      height: 100%;
+      overflow: auto;
+      padding: 14px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .data-table thead th {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      text-align: left;
+      padding: 9px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+    .data-table thead th:hover { color: var(--text); }
+
+    .sort-arrow { margin-left: 4px; opacity: 0.4; font-size: 10px; }
+    .sort-arrow.on { opacity: 1; color: var(--accent-hover); }
+
+    .data-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .data-table tbody tr:hover td { background: var(--surface2); }
+
+    .data-table td {
+      padding: 10px 12px;
+      vertical-align: middle;
+      max-width: 260px;
+    }
+
+    .td-title { font-weight: 500; }
+    .td-desc {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .sp-Backlog      { background: rgba(148,163,184,0.1); color: var(--text-muted); }
+    .sp-DieseWoche   { background: var(--accent-dim); color: var(--accent-hover); }
+    .sp-Heute        { background: var(--orange-dim); color: #fdba74; }
+    .sp-Waiting      { background: var(--yellow-dim); color: var(--yellow); }
+    .sp-Done         { background: var(--green-dim); color: var(--green); }
+
+    .ampel-emoji { font-size: 15px; }
+
+    .td-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+    .td-quelle { color: var(--text-muted); font-size: 12px; }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 12px;
+      color: var(--text-faint);
+      gap: 4px;
+    }
+    .empty-col-icon { font-size: 24px; opacity: 0.3; }
+    .empty-col-text { font-size: 11px; font-weight: 500; }
+
+    .empty-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 10px;
+      color: var(--text-muted);
+    }
+    .empty-view-icon { font-size: 48px; opacity: 0.2; }
+    .empty-view-title { font-size: 16px; font-weight: 700; }
+    .empty-view-sub { font-size: 13px; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(6px);
+      padding: 16px;
+    }
+    .modal-overlay.hidden { display: none; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 560px;
+      max-width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: modalIn 0.2s cubic-bezier(.16,1,.3,1);
+    }
+
+    @keyframes modalIn {
+      from { transform: translateY(16px) scale(0.97); opacity: 0; }
+      to   { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 5;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      border: none;
+      background: var(--surface2);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { background: var(--border); color: var(--text); }
+
+    .modal-body {
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    .form-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      padding: 8px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+      font-family: inherit;
+      width: 100%;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent);
+    }
+    .form-input.invalid { border-color: var(--red) !important; }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 76px;
+      line-height: 1.5;
+    }
+
+    /* Ampel Selector */
+    .ampel-row { display: flex; gap: 8px; }
+    .ampel-opt {
+      flex: 1;
+      padding: 8px 6px;
+      border: 2px solid var(--border);
+      border-radius: 7px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .ampel-opt .ao-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .ao-grün   .ao-dot { background: var(--green); }
+    .ao-orange .ao-dot { background: var(--orange); }
+    .ao-rot    .ao-dot { background: var(--red); }
+    .ao-grün   { color: var(--green); }
+    .ao-orange { color: var(--orange); }
+    .ao-rot    { color: var(--red); }
+    .ampel-opt.sel.ao-grün   { border-color: var(--green); background: var(--green-dim); }
+    .ampel-opt.sel.ao-orange { border-color: var(--orange); background: var(--orange-dim); }
+    .ampel-opt.sel.ao-rot    { border-color: var(--red); background: var(--red-dim); }
+
+    /* Tags Selector */
+    .tags-row { display: flex; gap: 7px; flex-wrap: wrap; }
+    .tag-opt {
+      padding: 5px 11px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .tag-opt:hover { border-color: var(--border-hover); color: var(--text); }
+    .tag-opt.sel { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .modal-footer {
+      padding: 14px 22px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 7px;
+      align-items: center;
+      position: sticky;
+      bottom: 0;
+      background: var(--surface);
+    }
+
+    .footer-left { margin-right: auto; }
+
+    /* ===== CONFIRM DIALOG ===== */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(4px);
+    }
+
+    .confirm-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      width: 380px;
+      max-width: 95vw;
+      box-shadow: var(--shadow-lg);
+      animation: modalIn 0.15s ease;
+    }
+
+    .confirm-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .confirm-msg { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.6; }
+    .confirm-acts { display: flex; justify-content: flex-end; gap: 8px; }
+
+    /* ===== TOASTS ===== */
+    .toast-container {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      z-index: 9999;
+    }
+
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 15px;
+      font-size: 13px;
+      box-shadow: var(--shadow);
+      min-width: 200px;
+      max-width: 320px;
+      animation: toastIn 0.2s ease;
+    }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error   { border-left: 3px solid var(--red); }
+    .toast.info    { border-left: 3px solid var(--accent); }
+
+    @keyframes toastIn {
+      from { transform: translateX(16px); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ===== SHORTCUTS BAR ===== */
+    .shortcuts-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 5px 16px;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .sc-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-faint); }
+    .kbd {
+      display: inline-block;
+      padding: 1px 5px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ===== UTILITIES ===== */
+    .hidden { display: none !important; }
+    .muted { color: var(--text-muted); }
+    .text-sm { font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">
+    <div class="logo-icon">⬡</div>
+    PTP Workboard
+  </div>
+  <div class="nav-sep"></div>
+  <div class="board-tabs" id="boardTabs"></div>
+  <div class="nav-sep"></div>
+  <div class="view-switcher">
+    <button class="view-btn active" id="vbKanban" onclick="setView('kanban')">Kanban</button>
+    <button class="view-btn" id="vbList"   onclick="setView('list')">Liste</button>
+    <button class="view-btn" id="vbTable"  onclick="setView('table')">Tabelle</button>
+  </div>
+  <div class="nav-sep"></div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input class="search-input" id="searchInput"
+      placeholder="Suchen…  (/)" type="text" oninput="onSearch()">
+  </div>
+  <div class="ml-auto nav-actions">
+    <button class="btn btn-secondary btn-sm" onclick="importData()">↑ Import</button>
+    <button class="btn btn-secondary btn-sm" onclick="exportData()">↓ Export</button>
+    <button class="btn btn-primary btn-sm"   onclick="openModal(null)">＋ Neu</button>
+  </div>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+</nav>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Filter</span>
+  <select class="filter-select" id="filterOwner" onchange="applyFilters()">
+    <option value="">Owner: Alle</option>
+  </select>
+  <select class="filter-select" id="filterAmpel" onchange="applyFilters()">
+    <option value="">Ampel: Alle</option>
+    <option value="grün">🟢 Grün</option>
+    <option value="orange">🟠 Orange</option>
+    <option value="rot">🔴 Rot</option>
+  </select>
+  <div class="nav-sep"></div>
+  <span class="filter-label">Tags</span>
+  <div class="tag-filter-group" id="tagFilters"></div>
+  <button class="btn btn-secondary btn-sm" style="margin-left:auto" onclick="clearFilters()">Zurücksetzen</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main" id="mainContent"></div>
+
+<!-- SHORTCUTS BAR -->
+<div class="shortcuts-bar">
+  <div class="sc-item"><span class="kbd">N</span> Neue Aufgabe</div>
+  <div class="sc-item"><span class="kbd">/</span> Suchen</div>
+  <div class="sc-item"><span class="kbd">Esc</span> Schließen</div>
+  <div class="sc-item"><span class="kbd">Drag &amp; Drop</span> Status ändern</div>
+  <div class="sc-item" style="margin-left:auto;">Alle Daten nur im Speicher · Export zum Sichern</div>
+</div>
+
+<!-- TASK MODAL -->
+<div class="modal-overlay hidden" id="modalOverlay" onclick="overlayClick(event)">
+  <div class="modal" id="theModal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Aufgabe erstellen</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Titel *</label>
+        <input class="form-input" id="fTitle" placeholder="Aufgabentitel eingeben…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Beschreibung</label>
+        <textarea class="form-textarea" id="fDesc" placeholder="Details, Kontext, Notizen…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Owner</label>
+          <input class="form-input" id="fOwner" placeholder="Name…">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input class="form-input" id="fDue" type="date">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="fStatus">
+            <option value="Backlog">Backlog</option>
+            <option value="Diese Woche">Diese Woche</option>
+            <option value="Heute">Heute</option>
+            <option value="Waiting">Waiting</option>
+            <option value="Done">Done</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Board</label>
+          <select class="form-select" id="fBoard"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quelle</label>
+        <input class="form-input" id="fQuelle" placeholder="z.B. E-Mail, Meeting, Ticket-Nr…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ampel</label>
+        <div class="ampel-row" id="ampelRow">
+          <div class="ampel-opt ao-grün" onclick="pickAmpel('grün')">
+            <div class="ao-dot"></div>Grün
+          </div>
+          <div class="ampel-opt ao-orange" onclick="pickAmpel('orange')">
+            <div class="ao-dot"></div>Orange
+          </div>
+          <div class="ampel-opt ao-rot" onclick="pickAmpel('rot')">
+            <div class="ao-dot"></div>Rot
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags</label>
+        <div class="tags-row" id="tagsRow">
+          <div class="tag-opt" onclick="toggleTag('Report')">Report</div>
+          <div class="tag-opt" onclick="toggleTag('Analyse')">Analyse</div>
+          <div class="tag-opt" onclick="toggleTag('Budget')">Budget</div>
+          <div class="tag-opt" onclick="toggleTag('Meeting')">Meeting</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="footer-left">
+        <button class="btn btn-danger hidden" id="btnDelete" onclick="askDelete()">Löschen</button>
+      </div>
+      <button class="btn btn-secondary" onclick="closeModal()">Abbrechen</button>
+      <button class="btn btn-primary" onclick="saveTask()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastCont"></div>
+
+<script>
+// ================================================================
+// CONSTANTS
+// ================================================================
+const STATUSES = ['Backlog','Diese Woche','Heute','Waiting','Done'];
+const STATUS_META = {
+  'Backlog':      { icon:'📋', cls:'Backlog' },
+  'Diese Woche':  { icon:'📅', cls:'DieseWoche' },
+  'Heute':        { icon:'🔥', cls:'Heute' },
+  'Waiting':      { icon:'⏳', cls:'Waiting' },
+  'Done':         { icon:'✅', cls:'Done' },
+};
+const TAGS = ['Report','Analyse','Budget','Meeting'];
+const AMPELS = ['grün','orange','rot'];
+
+// ================================================================
+// STATE
+// ================================================================
+let S = {
+  boards: [],
+  curBoardId: null,
+  view: 'kanban',
+  search: '',
+  filterOwner: '',
+  filterAmpel: '',
+  filterTags: [],
+  sortField: 'dueDate',
+  sortDir: 'asc',
+  editId: null,
+  ampelPick: 'grün',
+  tagPick: [],
+  dragId: null,
+};
+
+// ================================================================
+// ID GENERATOR
+// ================================================================
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+// ================================================================
+// SEED DATA
+// ================================================================
+function seed() {
+  const D = (n) => {
+    const d = new Date();
+    d.setDate(d.getDate() + n);
+    return d.toISOString().slice(0,10);
+  };
+
+  return {
+    boards: [
+      {
+        id: uid(),
+        name: 'WKS_QM',
+        tasks: [
+          {
+            id: uid(), title: 'Q1-Qualitätsbericht erstellen',
+            description: 'Zusammenfassung aller KPIs für Q1. Abweichungen dokumentieren und Maßnahmen ableiten. Freigabe durch Abteilungsleitung einholen.',
+            owner: 'S. Jeanneaux', dueDate: D(2),
+            status: 'Heute', ampel: 'rot',
+            tags: ['Report'], quelle: 'QM-Meeting 14.02'
+          },
+          {
+            id: uid(), title: 'Audit-Checkliste aktualisieren',
+            description: 'ISO 9001 Anforderungen prüfen und Checkliste für das nächste interne Audit anpassen. Delta zum Vorjahr markieren.',
+            owner: 'M. Schmidt', dueDate: D(7),
+            status: 'Diese Woche', ampel: 'orange',
+            tags: ['Analyse'], quelle: 'Jahresplanung'
+          },
+          {
+            id: uid(), title: 'Lieferanten-Bewertungsmatrix überarbeiten',
+            description: 'Neue Bewertungskriterien einarbeiten, Gewichtungen anpassen. Rücksprache mit Einkauf.',
+            owner: 'T. Müller', dueDate: D(14),
+            status: 'Backlog', ampel: 'grün',
+            tags: ['Analyse'], quelle: 'Einkaufs-Review'
+          },
+          {
+            id: uid(), title: 'Reklamationsanalyse Q4',
+            description: 'Ursachenanalyse aller Q4-Reklamationen. 8D-Reports prüfen, Wiederholungsfehler identifizieren.',
+            owner: 'S. Jeanneaux', dueDate: D(-2),
+            status: 'Waiting', ampel: 'rot',
+            tags: ['Report','Analyse'], quelle: 'Kundeneskalation'
+          },
+          {
+            id: uid(), title: 'KPI-Dashboard aktualisieren',
+            description: 'Monatliche KPIs einpflegen, Trendcharts prüfen und Kommentarfelder ausfüllen.',
+            owner: 'M. Schmidt', dueDate: D(1),
+            status: 'Heute', ampel: 'orange',
+            tags: ['Report'], quelle: 'Routineaufgabe'
+          },
+          {
+            id: uid(), title: 'FMEA Review Prozess Montage',
+            description: 'FMEA aktualisieren nach Prozessänderung vom 20.01. Risikoklassen neu bewerten.',
+            owner: 'T. Müller', dueDate: D(21),
+            status: 'Backlog', ampel: 'grün',
+            tags: ['Analyse'], quelle: 'Prozessänderung #42'
+          },
+          {
+            id: uid(), title: 'QM-Meeting Protokoll versenden',
+            description: 'Protokoll des letzten QM-Meetings finalisieren und an Verteiler senden.',
+            owner: 'S. Jeanneaux', dueDate: D(-1),
+            status: 'Done', ampel: 'grün',
+            tags: ['Meeting'], quelle: 'Meeting 01.03'
+          },
+          {
+            id: uid(), title: 'Schulungsplan Q2 abstimmen',
+            description: 'Schulungsbedarf ermitteln und Termine mit HR koordinieren.',
+            owner: 'M. Schmidt', dueDate: D(30),
+            status: 'Backlog', ampel: 'grün',
+            tags: ['Meeting'], quelle: 'HR-Anfrage'
+          },
+        ]
+      },
+      {
+        id: uid(),
+        name: 'WKS_Projekte',
+        tasks: [
+          {
+            id: uid(), title: 'Projektbudget 2025 finalisieren',
+            description: 'Alle Projektkosten zusammenstellen, Budgetabweichungen kommentieren, Freigabe durch CFO einholen.',
+            owner: 'K. Weber', dueDate: D(2),
+            status: 'Heute', ampel: 'rot',
+            tags: ['Budget'], quelle: 'Controlling-Anfrage'
+          },
+          {
+            id: uid(), title: 'Kick-off Projekt Alpha vorbereiten',
+            description: 'Agenda erstellen, Präsentation vorbereiten, Einladungen versenden. Raum buchen.',
+            owner: 'S. Jeanneaux', dueDate: D(5),
+            status: 'Diese Woche', ampel: 'orange',
+            tags: ['Meeting'], quelle: 'Projektauftrag #2025-01'
+          },
+          {
+            id: uid(), title: 'Marktanalyse Segment B',
+            description: 'Wettbewerbsanalyse, Preisvergleich, Potenzialschätzung für Segment B. Externe Quelle DESTATIS einbeziehen.',
+            owner: 'T. Müller', dueDate: D(10),
+            status: 'Diese Woche', ampel: 'orange',
+            tags: ['Analyse'], quelle: 'Strategiemeeting'
+          },
+          {
+            id: uid(), title: 'Investitionsrechnung ERP-Upgrade',
+            description: 'ROI-Berechnung, Amortisationszeit, Risikoabschätzung erstellen. Vergleich 3 Anbieter.',
+            owner: 'K. Weber', dueDate: D(20),
+            status: 'Backlog', ampel: 'grün',
+            tags: ['Budget','Analyse'], quelle: 'IT-Roadmap'
+          },
+          {
+            id: uid(), title: 'Statusbericht Projekt Beta',
+            description: 'Meilensteinfortschritt, Risiken und nächste Schritte dokumentieren. PMO-Template verwenden.',
+            owner: 'S. Jeanneaux', dueDate: D(-1),
+            status: 'Waiting', ampel: 'orange',
+            tags: ['Report'], quelle: 'PMO-Anforderung'
+          },
+          {
+            id: uid(), title: 'Ressourcenplanung Q2',
+            description: 'Kapazitäten für alle laufenden Projekte für Q2 abstimmen. FTE-Liste aktualisieren.',
+            owner: 'K. Weber', dueDate: D(12),
+            status: 'Diese Woche', ampel: 'grün',
+            tags: ['Budget'], quelle: 'Quartalsplanung'
+          },
+          {
+            id: uid(), title: 'Abschlussbericht Projekt Gamma',
+            description: 'Lessons Learned dokumentieren, Abschlussdokumentation erstellen. Archivierung veranlassen.',
+            owner: 'T. Müller', dueDate: D(-5),
+            status: 'Done', ampel: 'grün',
+            tags: ['Report'], quelle: 'Projektabschluss'
+          },
+          {
+            id: uid(), title: 'Risikoregister aktualisieren',
+            description: 'Neue Risiken aufnehmen, Bewertungen aktualisieren, Maßnahmen prüfen. Quartalsweise Pflicht.',
+            owner: 'S. Jeanneaux', dueDate: D(28),
+            status: 'Backlog', ampel: 'grün',
+            tags: ['Analyse'], quelle: 'PMO-Standard'
+          },
+        ]
+      }
+    ]
+  };
+}
+
+// ================================================================
+// INIT
+// ================================================================
+function init() {
+  const data = seed();
+  S.boards = data.boards;
+  S.curBoardId = S.boards[0].id;
+  renderBoardTabs();
+  refreshOwnerFilter();
+  renderTagFilters();
+  renderView();
+}
+
+// ================================================================
+// BOARD TABS
+// ================================================================
+function renderBoardTabs() {
+  document.getElementById('boardTabs').innerHTML = S.boards.map(b =>
+    `<button class="board-tab${b.id===S.curBoardId?' active':''}" onclick="switchBoard('${b.id}')">${esc(b.name)}</button>`
+  ).join('');
+}
+
+function switchBoard(id) {
+  S.curBoardId = id;
+  S.filterOwner = ''; S.filterAmpel = ''; S.filterTags = []; S.search = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterOwner').value = '';
+  document.getElementById('filterAmpel').value = '';
+  renderBoardTabs();
+  refreshOwnerFilter();
+  renderTagFilters();
+  renderView();
+}
+
+// ================================================================
+// HELPERS
+// ================================================================
+function curBoard() { return S.boards.find(b => b.id === S.curBoardId); }
+
+function filteredTasks() {
+  const board = curBoard();
+  if (!board) return [];
+  let tasks = [...board.tasks];
+  const q = S.search.toLowerCase().trim();
+  if (q) tasks = tasks.filter(t =>
+    (t.title||'').toLowerCase().includes(q) ||
+    (t.description||'').toLowerCase().includes(q) ||
+    (t.owner||'').toLowerCase().includes(q) ||
+    (t.quelle||'').toLowerCase().includes(q) ||
+    (t.tags||[]).some(tg => tg.toLowerCase().includes(q))
+  );
+  if (S.filterOwner) tasks = tasks.filter(t => t.owner === S.filterOwner);
+  if (S.filterAmpel) tasks = tasks.filter(t => t.ampel === S.filterAmpel);
+  if (S.filterTags.length) tasks = tasks.filter(t =>
+    S.filterTags.every(ft => (t.tags||[]).includes(ft))
+  );
+  return tasks;
+}
+
+function dueClass(ds) {
+  if (!ds) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = (new Date(ds) - today) / 86400000;
+  if (diff < 0) return 'overdue';
+  if (diff <= 3) return 'soon';
+  return '';
+}
+
+function fmtDate(ds) {
+  if (!ds) return '';
+  const d = new Date(ds);
+  return d.toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'2-digit'});
+}
+
+function initials(name) {
+  if (!name) return '?';
+  return name.trim().split(/\s+/).map(p=>p[0]||'').join('').toUpperCase().slice(0,2);
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function findTask(id) {
+  for (const b of S.boards) { const t = b.tasks.find(t=>t.id===id); if(t) return t; }
+  return null;
+}
+
+function boardOf(id) { return S.boards.find(b => b.tasks.some(t=>t.id===id)); }
+
+function spCls(status) { return 'sp-' + status.replace(' ',''); }
+
+function ampelEmoji(a) { return {grün:'🟢',orange:'🟠',rot:'🔴'}[a]||'⚪'; }
+
+// ================================================================
+// VIEWS
+// ================================================================
+function setView(v) {
+  S.view = v;
+  ['Kanban','List','Table'].forEach(n => {
+    document.getElementById('vb'+n).classList.toggle('active', n.toLowerCase()===v);
+  });
+  renderView();
+}
+
+function renderView() {
+  const el = document.getElementById('mainContent');
+  if (S.view==='kanban') { el.innerHTML = buildKanban(); bindDnD(); }
+  else if (S.view==='list') { el.innerHTML = buildList(); }
+  else { el.innerHTML = buildTable(); }
+}
+
+// ----------------------------------------------------------------
+// KANBAN
+// ----------------------------------------------------------------
+function buildKanban() {
+  const tasks = filteredTasks();
+  return `<div class="kanban-view">${
+    STATUSES.map(status => {
+      const m = STATUS_META[status];
+      const colTasks = tasks.filter(t => t.status === status);
+      return `
+        <div class="kanban-col col-${m.cls}"
+          data-status="${status}"
+          ondragover="doDragOver(event)"
+          ondrop="doDrop(event,'${status}')"
+          ondragleave="doDragLeave(event)">
+          <div class="col-header">
+            <span class="col-icon">${m.icon}</span>
+            <span class="col-title">${status}</span>
+            <span class="col-count">${colTasks.length}</span>
+            <button class="col-add" onclick="openModal(null,'${status}')" title="Neue Aufgabe">+</button>
+          </div>
+          <div class="col-body" id="cb-${m.cls}">
+            ${colTasks.length===0
+              ? `<div class="empty-col"><div class="empty-col-icon">·</div><div class="empty-col-text">Leer</div></div>`
+              : colTasks.map(t => cardHtml(t)).join('')
+            }
+          </div>
+        </div>`;
+    }).join('')
+  }</div>`;
+}
+
+function cardHtml(t) {
+  const dc = dueClass(t.dueDate);
+  const tags = (t.tags||[]).map(tg=>`<span class="tag-chip tag-${tg}">${tg}</span>`).join('');
+  return `
+    <div class="task-card a-${t.ampel||'grün'}"
+      draggable="true"
+      data-id="${t.id}"
+      onclick="openModal('${t.id}')"
+      ondragstart="doDragStart(event,'${t.id}')"
+      ondragend="doDragEnd()">
+      <div class="card-actions">
+        <button class="card-act-btn del"
+          onclick="event.stopPropagation();askDeleteId('${t.id}')"
+          title="Löschen">✕</button>
+      </div>
+      <div class="card-title">${esc(t.title)}</div>
+      <div class="card-meta">
+        ${t.owner ? `<div class="owner-chip"><div class="avatar">${initials(t.owner)}</div>${esc(t.owner)}</div>` : ''}
+        ${t.dueDate ? `<span class="due-chip ${dc}">${fmtDate(t.dueDate)}</span>` : ''}
+        ${tags}
+        <div class="ampel-dot ${t.ampel||'grün'}" style="margin-left:auto"></div>
+      </div>
+    </div>`;
+}
+
+// ----------------------------------------------------------------
+// LIST
+// ----------------------------------------------------------------
+function buildList() {
+  let tasks = sortedTasks();
+  const si = (f) => {
+    if (S.sortField!==f) return `<span class="sort-arrow">↕</span>`;
+    return `<span class="sort-arrow on">${S.sortDir==='asc'?'↑':'↓'}</span>`;
+  };
+  return `<div class="list-view">
+    <table class="data-table">
+      <thead><tr>
+        <th onclick="sortBy('title')">Titel ${si('title')}</th>
+        <th onclick="sortBy('status')">Status ${si('status')}</th>
+        <th onclick="sortBy('owner')">Owner ${si('owner')}</th>
+        <th onclick="sortBy('dueDate')">Due Date ${si('dueDate')}</th>
+        <th>Ampel</th>
+        <th>Tags</th>
+        <th onclick="sortBy('quelle')">Quelle ${si('quelle')}</th>
+      </tr></thead>
+      <tbody>
+        ${tasks.length===0 ? emptyRow(7) : tasks.map(t => `
+          <tr onclick="openModal('${t.id}')">
+            <td class="td-title">${esc(t.title)}</td>
+            <td><span class="status-pill ${spCls(t.status)}">${t.status}</span></td>
+            <td>${ownerCell(t.owner)}</td>
+            <td><span class="due-chip ${dueClass(t.dueDate)}">${fmtDate(t.dueDate)||'—'}</span></td>
+            <td><span class="ampel-emoji">${ampelEmoji(t.ampel)}</span></td>
+            <td><div class="td-tags">${(t.tags||[]).map(tg=>`<span class="tag-chip tag-${tg}">${tg}</span>`).join('')}</div></td>
+            <td class="td-quelle">${esc(t.quelle||'—')}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// ----------------------------------------------------------------
+// TABLE
+// ----------------------------------------------------------------
+function buildTable() {
+  let tasks = sortedTasks();
+  const si = (f) => {
+    if (S.sortField!==f) return `<span class="sort-arrow">↕</span>`;
+    return `<span class="sort-arrow on">${S.sortDir==='asc'?'↑':'↓'}</span>`;
+  };
+  return `<div class="table-view">
+    <table class="data-table">
+      <thead><tr>
+        <th onclick="sortBy('title')">Titel ${si('title')}</th>
+        <th onclick="sortBy('status')">Status ${si('status')}</th>
+        <th onclick="sortBy('owner')">Owner ${si('owner')}</th>
+        <th onclick="sortBy('dueDate')">Due Date ${si('dueDate')}</th>
+        <th>Ampel</th>
+        <th>Tags</th>
+        <th onclick="sortBy('quelle')">Quelle ${si('quelle')}</th>
+        <th>Beschreibung</th>
+      </tr></thead>
+      <tbody>
+        ${tasks.length===0 ? emptyRow(8) : tasks.map(t => `
+          <tr onclick="openModal('${t.id}')">
+            <td class="td-title">${esc(t.title)}</td>
+            <td><span class="status-pill ${spCls(t.status)}">${t.status}</span></td>
+            <td>${ownerCell(t.owner)}</td>
+            <td><span class="due-chip ${dueClass(t.dueDate)}">${fmtDate(t.dueDate)||'—'}</span></td>
+            <td><span class="ampel-emoji">${ampelEmoji(t.ampel)}</span></td>
+            <td><div class="td-tags">${(t.tags||[]).map(tg=>`<span class="tag-chip tag-${tg}">${tg}</span>`).join('')}</div></td>
+            <td class="td-quelle">${esc(t.quelle||'—')}</td>
+            <td class="td-desc">${esc(t.description||'—')}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function ownerCell(owner) {
+  if (!owner) return '<span class="muted">—</span>';
+  return `<div class="owner-chip"><div class="avatar">${initials(owner)}</div>${esc(owner)}</div>`;
+}
+
+function emptyRow(cols) {
+  return `<tr><td colspan="${cols}">
+    <div class="empty-view">
+      <div class="empty-view-icon">📋</div>
+      <div class="empty-view-title">Keine Aufgaben</div>
+      <div class="empty-view-sub">Erstelle eine neue Aufgabe mit <span class="kbd">N</span></div>
+    </div>
+  </td></tr>`;
+}
+
+function sortedTasks() {
+  let tasks = filteredTasks();
+  return tasks.sort((a,b) => {
+    let va = a[S.sortField]||'', vb = b[S.sortField]||'';
+    if (S.sortField==='dueDate') { va=va||'9999'; vb=vb||'9999'; }
+    const c = va<vb?-1:va>vb?1:0;
+    return S.sortDir==='asc' ? c : -c;
+  });
+}
+
+function sortBy(f) {
+  if (S.sortField===f) S.sortDir = S.sortDir==='asc'?'desc':'asc';
+  else { S.sortField=f; S.sortDir='asc'; }
+  renderView();
+}
+
+// ================================================================
+// DRAG & DROP
+// ================================================================
+function bindDnD() { /* inline handlers */ }
+
+function doDragStart(e, id) {
+  S.dragId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if (el) el.classList.add('dragging');
+  });
+}
+
+function doDragEnd() {
+  document.querySelectorAll('.task-card.dragging').forEach(el => el.classList.remove('dragging'));
+  document.querySelectorAll('.kanban-col.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+
+function doDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+
+function doDragLeave(e) {
+  if (!e.currentTarget.contains(e.relatedTarget)) {
+    e.currentTarget.classList.remove('drag-over');
+  }
+}
+
+function doDrop(e, newStatus) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!S.dragId) return;
+  const board = curBoard();
+  const task = board.tasks.find(t => t.id===S.dragId);
+  if (task && task.status !== newStatus) {
+    task.status = newStatus;
+    toast(`"${task.title}" → ${newStatus}`, 'success');
+    renderView();
+  }
+  S.dragId = null;
+}
+
+// ================================================================
+// MODAL
+// ================================================================
+function openModal(id, defStatus) {
+  S.editId = id;
+  const isnew = !id;
+  document.getElementById('modalTitle').textContent = isnew ? 'Aufgabe erstellen' : 'Aufgabe bearbeiten';
+  document.getElementById('btnDelete').classList.toggle('hidden', isnew);
+
+  if (id) {
+    const t = findTask(id);
+    if (!t) return;
+    document.getElementById('fTitle').value   = t.title||'';
+    document.getElementById('fDesc').value    = t.description||'';
+    document.getElementById('fOwner').value   = t.owner||'';
+    document.getElementById('fDue').value     = t.dueDate||'';
+    document.getElementById('fStatus').value  = t.status||'Backlog';
+    document.getElementById('fQuelle').value  = t.quelle||'';
+    S.ampelPick = t.ampel||'grün';
+    S.tagPick   = [...(t.tags||[])];
+    const brd = boardOf(id);
+    document.getElementById('fBoard').value   = brd ? brd.id : S.curBoardId;
+  } else {
+    document.getElementById('fTitle').value   = '';
+    document.getElementById('fDesc').value    = '';
+    document.getElementById('fOwner').value   = '';
+    document.getElementById('fDue').value     = '';
+    document.getElementById('fStatus').value  = defStatus||'Backlog';
+    document.getElementById('fQuelle').value  = '';
+    S.ampelPick = 'grün';
+    S.tagPick   = [];
+  }
+
+  // Board select
+  document.getElementById('fBoard').innerHTML = S.boards.map(b =>
+    `<option value="${b.id}"${b.id===S.curBoardId?' selected':''}>${esc(b.name)}</option>`
+  ).join('');
+
+  if (id) {
+    const brd = boardOf(id);
+    if (brd) document.getElementById('fBoard').value = brd.id;
+  }
+
+  refreshAmpelUI();
+  refreshTagsUI();
+
+  document.getElementById('modalOverlay').classList.remove('hidden');
+  setTimeout(() => document.getElementById('fTitle').focus(), 60);
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.add('hidden');
+  S.editId = null;
+}
+
+function overlayClick(e) {
+  if (e.target===document.getElementById('modalOverlay')) closeModal();
+}
+
+function pickAmpel(v) {
+  S.ampelPick = v;
+  refreshAmpelUI();
+}
+
+function refreshAmpelUI() {
+  document.querySelectorAll('.ampel-opt').forEach(el => {
+    const v = el.classList.contains('ao-grün')   ? 'grün'
+            : el.classList.contains('ao-orange') ? 'orange' : 'rot';
+    el.classList.toggle('sel', v===S.ampelPick);
+  });
+}
+
+function toggleTag(tag) {
+  const i = S.tagPick.indexOf(tag);
+  if (i>=0) S.tagPick.splice(i,1); else S.tagPick.push(tag);
+  refreshTagsUI();
+}
+
+function refreshTagsUI() {
+  document.querySelectorAll('.tag-opt').forEach(el => {
+    el.classList.toggle('sel', S.tagPick.includes(el.textContent.trim()));
+  });
+}
+
+function saveTask() {
+  const titleEl = document.getElementById('fTitle');
+  const title = titleEl.value.trim();
+  if (!title) {
+    titleEl.classList.add('invalid');
+    titleEl.focus();
+    setTimeout(()=>titleEl.classList.remove('invalid'),1500);
+    return;
+  }
+
+  const data = {
+    title,
+    description: document.getElementById('fDesc').value.trim(),
+    owner:  document.getElementById('fOwner').value.trim(),
+    dueDate: document.getElementById('fDue').value,
+    status: document.getElementById('fStatus').value,
+    quelle: document.getElementById('fQuelle').value.trim(),
+    ampel:  S.ampelPick,
+    tags:   [...S.tagPick],
+  };
+
+  const targetBoardId = document.getElementById('fBoard').value;
+
+  if (S.editId) {
+    const srcBoard = boardOf(S.editId);
+    const tgtBoard = S.boards.find(b=>b.id===targetBoardId);
+    if (srcBoard && tgtBoard) {
+      if (srcBoard.id !== tgtBoard.id) {
+        const idx = srcBoard.tasks.findIndex(t=>t.id===S.editId);
+        if (idx>=0) {
+          const [moved] = srcBoard.tasks.splice(idx,1);
+          Object.assign(moved, data);
+          tgtBoard.tasks.push(moved);
+        }
+      } else {
+        const task = srcBoard.tasks.find(t=>t.id===S.editId);
+        if (task) Object.assign(task, data);
+      }
+    }
+    toast('Aufgabe gespeichert', 'success');
+  } else {
+    const newTask = { id: uid(), ...data };
+    const tgtBoard = S.boards.find(b=>b.id===targetBoardId)||curBoard();
+    tgtBoard.tasks.push(newTask);
+    toast('Aufgabe erstellt', 'success');
+  }
+
+  closeModal();
+  refreshOwnerFilter();
+  renderBoardTabs();
+  renderView();
+}
+
+// ================================================================
+// DELETE
+// ================================================================
+function askDelete() {
+  if (S.editId) askDeleteId(S.editId);
+}
+
+function askDeleteId(id) {
+  const task = findTask(id);
+  if (!task) return;
+  const ov = document.createElement('div');
+  ov.className = 'confirm-overlay';
+  ov.innerHTML = `
+    <div class="confirm-box">
+      <div class="confirm-title">Aufgabe löschen?</div>
+      <div class="confirm-msg">„${esc(task.title)}" wird unwiderruflich gelöscht.</div>
+      <div class="confirm-acts">
+        <button class="btn btn-secondary" onclick="this.closest('.confirm-overlay').remove()">Abbrechen</button>
+        <button class="btn btn-danger" onclick="doDelete('${id}',this)">Löschen</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+}
+
+function doDelete(id, btn) {
+  const b = boardOf(id);
+  if (b) b.tasks = b.tasks.filter(t=>t.id!==id);
+  btn.closest('.confirm-overlay').remove();
+  closeModal();
+  refreshOwnerFilter();
+  renderView();
+  toast('Aufgabe gelöscht', 'success');
+}
+
+// ================================================================
+// SEARCH & FILTERS
+// ================================================================
+function onSearch() {
+  S.search = document.getElementById('searchInput').value;
+  renderView();
+}
+
+function applyFilters() {
+  S.filterOwner = document.getElementById('filterOwner').value;
+  S.filterAmpel = document.getElementById('filterAmpel').value;
+  renderView();
+}
+
+function refreshOwnerFilter() {
+  const b = curBoard();
+  const owners = b ? [...new Set(b.tasks.map(t=>t.owner).filter(Boolean))].sort() : [];
+  const sel = document.getElementById('filterOwner');
+  const cur = sel.value;
+  sel.innerHTML = `<option value="">Owner: Alle</option>` +
+    owners.map(o=>`<option value="${esc(o)}"${o===cur?' selected':''}>${esc(o)}</option>`).join('');
+}
+
+function renderTagFilters() {
+  document.getElementById('tagFilters').innerHTML = TAGS.map(tag =>
+    `<button class="filter-tag${S.filterTags.includes(tag)?' active':''}"
+      onclick="toggleTagFilter('${tag}')">${tag}</button>`
+  ).join('');
+}
+
+function toggleTagFilter(tag) {
+  const i = S.filterTags.indexOf(tag);
+  if (i>=0) S.filterTags.splice(i,1); else S.filterTags.push(tag);
+  renderTagFilters();
+  renderView();
+}
+
+function clearFilters() {
+  S.filterOwner=''; S.filterAmpel=''; S.filterTags=[]; S.search='';
+  document.getElementById('searchInput').value='';
+  document.getElementById('filterOwner').value='';
+  document.getElementById('filterAmpel').value='';
+  renderTagFilters();
+  renderView();
+}
+
+// ================================================================
+// EXPORT / IMPORT
+// ================================================================
+function exportData() {
+  const payload = {
+    version: '1.0',
+    app: 'PTP_Workboard',
+    exportedAt: new Date().toISOString(),
+    boards: S.boards,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `workboard_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Daten exportiert als workboard_*.json', 'success');
+}
+
+function importData() {
+  document.getElementById('importFile').click();
+}
+
+function handleImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data.boards)) throw new Error('Kein gültiges Workboard-Format (boards fehlt)');
+      S.boards = data.boards;
+      S.curBoardId = S.boards[0]?.id || null;
+      S.filterOwner=''; S.filterAmpel=''; S.filterTags=[]; S.search='';
+      document.getElementById('searchInput').value='';
+      document.getElementById('filterOwner').value='';
+      document.getElementById('filterAmpel').value='';
+      renderBoardTabs();
+      refreshOwnerFilter();
+      renderTagFilters();
+      renderView();
+      const total = S.boards.reduce((n,b)=>n+b.tasks.length,0);
+      toast(`${file.name} importiert · ${S.boards.length} Boards · ${total} Aufgaben`, 'success');
+    } catch(err) {
+      toast('Import fehlgeschlagen: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ================================================================
+// TOAST
+// ================================================================
+function toast(msg, type='info') {
+  const c = document.getElementById('toastCont');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.3s, transform 0.3s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(10px)';
+    setTimeout(() => el.remove(), 320);
+  }, 2800);
+}
+
+// ================================================================
+// KEYBOARD SHORTCUTS
+// ================================================================
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,textarea,select')) {
+    if (e.key === 'Escape') {
+      e.target.blur();
+      closeModal();
+    }
+    return;
+  }
+  if (e.key === 'n' || e.key === 'N') { e.preventDefault(); openModal(null); }
+  if (e.key === '/') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+  if (e.key === 'Escape') closeModal();
+  if (e.key === '1') setView('kanban');
+  if (e.key === '2') setView('list');
+  if (e.key === '3') setView('table');
+});
+
+// ================================================================
+// BOOTSTRAP
+// ================================================================
+init();
+</script>
+</body>
+</html>
