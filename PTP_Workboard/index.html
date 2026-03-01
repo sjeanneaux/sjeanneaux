@@ -1018,125 +1018,125 @@ function seed() {
     boards: [
       {
         id: uid(),
-        name: 'WKS_QM',
+        name: 'Projekt Löwe',
         tasks: [
           {
-            id: uid(), title: 'Q1-Qualitätsbericht erstellen',
-            description: 'Zusammenfassung aller KPIs für Q1. Abweichungen dokumentieren und Maßnahmen ableiten. Freigabe durch Abteilungsleitung einholen.',
-            owner: 'S. Jeanneaux', dueDate: D(2),
+            id: uid(), title: 'Marktanalyse Zielsegment finalisieren',
+            description: 'Wettbewerbsanalyse, Potenzialschätzung und Preispositionierung für Zielsegment D abschließen. Externe Datenquellen DESTATIS und GfK einbeziehen. Ergebnisse für Lenkungsausschuss aufbereiten.',
+            owner: 'S. Jeanneaux', dueDate: D(1),
             status: 'Heute', ampel: 'rot',
-            tags: ['Report'], quelle: 'QM-Meeting 14.02'
+            tags: ['Analyse'], quelle: 'Strategiemeeting 18.02'
           },
           {
-            id: uid(), title: 'Audit-Checkliste aktualisieren',
-            description: 'ISO 9001 Anforderungen prüfen und Checkliste für das nächste interne Audit anpassen. Delta zum Vorjahr markieren.',
-            owner: 'M. Schmidt', dueDate: D(7),
+            id: uid(), title: 'Kick-off Präsentation vorbereiten',
+            description: 'Projektübersicht, Meilensteinplan und Rollenverteilung aufbereiten. Einladungen an alle Stakeholder versenden, Raum und Technik reservieren.',
+            owner: 'P. Hoffmann', dueDate: D(5),
             status: 'Diese Woche', ampel: 'orange',
-            tags: ['Analyse'], quelle: 'Jahresplanung'
+            tags: ['Meeting'], quelle: 'Projektauftrag #L-2025-03'
           },
           {
-            id: uid(), title: 'Lieferanten-Bewertungsmatrix überarbeiten',
-            description: 'Neue Bewertungskriterien einarbeiten, Gewichtungen anpassen. Rücksprache mit Einkauf.',
-            owner: 'T. Müller', dueDate: D(14),
+            id: uid(), title: 'Budgetplanung Phase 2 freigeben',
+            description: 'Kostenaufstellung Phase 2 überarbeiten, Abweichungen zur ursprünglichen Kalkulation kommentieren. Freigabe durch CFO und Projektsteuerboard einholen.',
+            owner: 'L. Schäfer', dueDate: D(2),
+            status: 'Heute', ampel: 'rot',
+            tags: ['Budget'], quelle: 'Controlling-Anfrage'
+          },
+          {
+            id: uid(), title: 'Wettbewerbsanalyse DACH-Markt',
+            description: 'Hauptwettbewerber in DACH identifizieren, Produktvergleich und Preisbenchmarking erstellen. Ergebnisse als Foliensatz für den Vertrieb aufbereiten.',
+            owner: 'P. Hoffmann', dueDate: D(18),
             status: 'Backlog', ampel: 'grün',
-            tags: ['Analyse'], quelle: 'Einkaufs-Review'
+            tags: ['Analyse'], quelle: 'Strategiepapier Q1'
           },
           {
-            id: uid(), title: 'Reklamationsanalyse Q4',
-            description: 'Ursachenanalyse aller Q4-Reklamationen. 8D-Reports prüfen, Wiederholungsfehler identifizieren.',
-            owner: 'S. Jeanneaux', dueDate: D(-2),
-            status: 'Waiting', ampel: 'rot',
-            tags: ['Report','Analyse'], quelle: 'Kundeneskalation'
+            id: uid(), title: 'Go-to-Market Bericht abstimmen',
+            description: 'Vertriebsstrategie, Marketingplan und Launch-Timeline in einem GTM-Report zusammenfassen. Freigabe durch Geschäftsführung vor Veröffentlichung.',
+            owner: 'S. Jeanneaux', dueDate: D(7),
+            status: 'Diese Woche', ampel: 'orange',
+            tags: ['Report'], quelle: 'Vertrieb-Meeting 25.02'
           },
           {
-            id: uid(), title: 'KPI-Dashboard aktualisieren',
-            description: 'Monatliche KPIs einpflegen, Trendcharts prüfen und Kommentarfelder ausfüllen.',
-            owner: 'M. Schmidt', dueDate: D(1),
-            status: 'Heute', ampel: 'orange',
-            tags: ['Report'], quelle: 'Routineaufgabe'
+            id: uid(), title: 'Stakeholder-Review Protokoll versenden',
+            description: 'Protokoll des letzten Lenkungsausschusses finalisieren, offene Punkte markieren und an Verteiler senden. Rückmeldung bis Ende der Woche anfordern.',
+            owner: 'L. Schäfer', dueDate: D(-1),
+            status: 'Waiting', ampel: 'orange',
+            tags: ['Meeting'], quelle: 'Lenkungsausschuss 27.02'
           },
           {
-            id: uid(), title: 'FMEA Review Prozess Montage',
-            description: 'FMEA aktualisieren nach Prozessänderung vom 20.01. Risikoklassen neu bewerten.',
-            owner: 'T. Müller', dueDate: D(21),
-            status: 'Backlog', ampel: 'grün',
-            tags: ['Analyse'], quelle: 'Prozessänderung #42'
-          },
-          {
-            id: uid(), title: 'QM-Meeting Protokoll versenden',
-            description: 'Protokoll des letzten QM-Meetings finalisieren und an Verteiler senden.',
-            owner: 'S. Jeanneaux', dueDate: D(-1),
+            id: uid(), title: 'Pilotphase Abschlussbericht',
+            description: 'Ergebnisse der Pilotphase dokumentieren: KPIs, Lessons Learned, Empfehlungen für den Rollout. Archivierung im Projektordner.',
+            owner: 'P. Hoffmann', dueDate: D(-4),
             status: 'Done', ampel: 'grün',
-            tags: ['Meeting'], quelle: 'Meeting 01.03'
+            tags: ['Report'], quelle: 'Pilotabschluss Feb'
           },
           {
-            id: uid(), title: 'Schulungsplan Q2 abstimmen',
-            description: 'Schulungsbedarf ermitteln und Termine mit HR koordinieren.',
-            owner: 'M. Schmidt', dueDate: D(30),
+            id: uid(), title: 'Investitionsrechnung Produktionslinie',
+            description: 'ROI-Berechnung, Amortisationszeit und Risikoabschätzung für neue Produktionslinie. Vergleich von 3 Anbieterangeboten. Vorlage für Investitionsausschuss.',
+            owner: 'S. Jeanneaux', dueDate: D(25),
             status: 'Backlog', ampel: 'grün',
-            tags: ['Meeting'], quelle: 'HR-Anfrage'
+            tags: ['Budget'], quelle: 'CFO-Anfrage'
           },
         ]
       },
       {
         id: uid(),
-        name: 'WKS_Projekte',
+        name: 'Projekt Phönix',
         tasks: [
           {
-            id: uid(), title: 'Projektbudget 2025 finalisieren',
-            description: 'Alle Projektkosten zusammenstellen, Budgetabweichungen kommentieren, Freigabe durch CFO einholen.',
-            owner: 'K. Weber', dueDate: D(2),
+            id: uid(), title: 'Sprint-Review Report Q1 erstellen',
+            description: 'Velocity, abgeschlossene User Stories und Impediments aus Q1 dokumentieren. Abweichungen zum Projektplan kommentieren. PMO-Template verwenden.',
+            owner: 'A. Brenner', dueDate: D(1),
             status: 'Heute', ampel: 'rot',
-            tags: ['Budget'], quelle: 'Controlling-Anfrage'
-          },
-          {
-            id: uid(), title: 'Kick-off Projekt Alpha vorbereiten',
-            description: 'Agenda erstellen, Präsentation vorbereiten, Einladungen versenden. Raum buchen.',
-            owner: 'S. Jeanneaux', dueDate: D(5),
-            status: 'Diese Woche', ampel: 'orange',
-            tags: ['Meeting'], quelle: 'Projektauftrag #2025-01'
-          },
-          {
-            id: uid(), title: 'Marktanalyse Segment B',
-            description: 'Wettbewerbsanalyse, Preisvergleich, Potenzialschätzung für Segment B. Externe Quelle DESTATIS einbeziehen.',
-            owner: 'T. Müller', dueDate: D(10),
-            status: 'Diese Woche', ampel: 'orange',
-            tags: ['Analyse'], quelle: 'Strategiemeeting'
-          },
-          {
-            id: uid(), title: 'Investitionsrechnung ERP-Upgrade',
-            description: 'ROI-Berechnung, Amortisationszeit, Risikoabschätzung erstellen. Vergleich 3 Anbieter.',
-            owner: 'K. Weber', dueDate: D(20),
-            status: 'Backlog', ampel: 'grün',
-            tags: ['Budget','Analyse'], quelle: 'IT-Roadmap'
-          },
-          {
-            id: uid(), title: 'Statusbericht Projekt Beta',
-            description: 'Meilensteinfortschritt, Risiken und nächste Schritte dokumentieren. PMO-Template verwenden.',
-            owner: 'S. Jeanneaux', dueDate: D(-1),
-            status: 'Waiting', ampel: 'orange',
             tags: ['Report'], quelle: 'PMO-Anforderung'
           },
           {
-            id: uid(), title: 'Ressourcenplanung Q2',
-            description: 'Kapazitäten für alle laufenden Projekte für Q2 abstimmen. FTE-Liste aktualisieren.',
-            owner: 'K. Weber', dueDate: D(12),
+            id: uid(), title: 'IT-Jahresbudget Revision',
+            description: 'Budgetverbrauch YTD analysieren, Prognose für das Gesamtjahr aktualisieren. Lizenzkostensteigerungen und neue Investitionen einarbeiten. Abstimmung mit Controlling.',
+            owner: 'S. Jeanneaux', dueDate: D(3),
+            status: 'Heute', ampel: 'orange',
+            tags: ['Budget'], quelle: 'Controlling-Anfrage'
+          },
+          {
+            id: uid(), title: 'Stakeholder-Analyse aktualisieren',
+            description: 'Neue Stakeholder nach Reorganisation erfassen, Interessen und Einflusspotenziale neu bewerten. RACI-Matrix aktualisieren.',
+            owner: 'A. Brenner', dueDate: D(6),
+            status: 'Diese Woche', ampel: 'orange',
+            tags: ['Analyse'], quelle: 'Lenkungsausschuss Feb'
+          },
+          {
+            id: uid(), title: 'Kick-off Workshop Q2 planen',
+            description: 'Agenda für den Q2-Kick-off-Workshop entwickeln, externe Moderatorin anfragen, Breakout-Räume buchen. Einladungen 2 Wochen vorher versenden.',
+            owner: 'K. Lorenz', dueDate: D(8),
             status: 'Diese Woche', ampel: 'grün',
-            tags: ['Budget'], quelle: 'Quartalsplanung'
+            tags: ['Meeting'], quelle: 'Projektplan v2.1'
           },
           {
-            id: uid(), title: 'Abschlussbericht Projekt Gamma',
-            description: 'Lessons Learned dokumentieren, Abschlussdokumentation erstellen. Archivierung veranlassen.',
-            owner: 'T. Müller', dueDate: D(-5),
-            status: 'Done', ampel: 'grün',
-            tags: ['Report'], quelle: 'Projektabschluss'
+            id: uid(), title: 'Risikobewertung Datenmigration',
+            description: 'Risiken der bevorstehenden Datenmigration identifizieren und bewerten: Datenverlust, Ausfallzeit, Rollback-Szenarien. Risikomatrix aktualisieren.',
+            owner: 'A. Brenner', dueDate: D(-1),
+            status: 'Waiting', ampel: 'rot',
+            tags: ['Analyse'], quelle: 'Risikoregister v3'
           },
           {
-            id: uid(), title: 'Risikoregister aktualisieren',
-            description: 'Neue Risiken aufnehmen, Bewertungen aktualisieren, Maßnahmen prüfen. Quartalsweise Pflicht.',
-            owner: 'S. Jeanneaux', dueDate: D(28),
+            id: uid(), title: 'Fortschrittsbericht Lenkungsausschuss',
+            description: 'Meilensteinfortschritt, Budgetstatus und Top-Risiken für den monatlichen Lenkungsausschuss-Bericht zusammenstellen. Präsentationsfolien vorbereiten.',
+            owner: 'K. Lorenz', dueDate: D(14),
             status: 'Backlog', ampel: 'grün',
-            tags: ['Analyse'], quelle: 'PMO-Standard'
+            tags: ['Report'], quelle: 'PMO-Standard'
+          },
+          {
+            id: uid(), title: 'Abnahme Modul CRM',
+            description: 'Abnahmeprotokoll für das CRM-Modul erstellen, Testergebnisse dokumentieren. Unterschriften der Fachbereiche einholen. Archivierung im Projektordner.',
+            owner: 'S. Jeanneaux', dueDate: D(-3),
+            status: 'Done', ampel: 'grün',
+            tags: ['Meeting'], quelle: 'Abnahmeprotokoll #P-12'
+          },
+          {
+            id: uid(), title: 'Lizenzkosten Q2 optimieren',
+            description: 'SaaS-Lizenzverträge auf ungenutzten Seats prüfen, Einsparpotenziale identifizieren. Verhandlungsstrategie für Jahresgespräche mit Hauptanbietern entwickeln.',
+            owner: 'K. Lorenz', dueDate: D(30),
+            status: 'Backlog', ampel: 'grün',
+            tags: ['Budget'], quelle: 'IT-Roadmap 2025'
           },
         ]
       }
