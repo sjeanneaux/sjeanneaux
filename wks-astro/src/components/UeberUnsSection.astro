@@ -1,0 +1,77 @@
+---
+---
+
+<section id="ueber-uns" class="py-20 bg-muted/30">
+  <div class="container">
+    <div class="text-center mb-14 animate-on-scroll">
+      <h2 class="section-heading">Über uns</h2>
+      <p class="section-subtitle">Lernen Sie die Wilhelm-Knapp-Schule Weilburg kennen</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center mb-16">
+      <!-- Text -->
+      <div class="space-y-5 animate-on-scroll">
+        <h3 class="text-2xl font-bold text-wks-dark">Tradition und Innovation seit 1905</h3>
+        <p class="text-muted-foreground leading-relaxed">
+          Die Wilhelm-Knapp-Schule Weilburg ist eine
+          <strong class="text-foreground">Selbstständige Berufliche Schule (SBS)</strong> des
+          Landkreises Limburg-Weilburg. Mit über 2.000 Schülerinnen und Schülern gehören
+          wir zu den größten beruflichen Schulen in der Region.
+        </p>
+        <p class="text-muted-foreground leading-relaxed">
+          Unser Namensgeber Wilhelm Knapp (1839–1908) war ein bedeutender Verleger
+          wissenschaftlicher Literatur. In seinem Sinne verbinden wir Theorie und Praxis
+          in allen unseren Bildungsgängen.
+        </p>
+        <p class="text-muted-foreground leading-relaxed">
+          Wir bieten ein breites Spektrum an Schulformen in den Berufsfeldern
+          Metalltechnik, Elektrotechnik, Holztechnik, Fahrzeugtechnik, Ernährung und
+          Hauswirtschaft sowie Wirtschaft und Verwaltung.
+        </p>
+        <div class="pt-2">
+          <a
+            href="/#kontakt"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-wks-primary text-white font-semibold rounded-xl hover:bg-wks-dark transition-all hover:-translate-y-0.5 hover:shadow-md"
+          >
+            Kontakt aufnehmen
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Visual -->
+      <div
+        class="relative rounded-2xl bg-gradient-to-br from-wks-light to-wks-light/40 h-80 flex items-center justify-center animate-on-scroll overflow-hidden border border-border/50"
+        style="transition-delay: 150ms"
+      >
+        <div class="text-[100px] opacity-20 absolute">🏫</div>
+        <div class="relative z-10 text-center p-8">
+          <div class="text-6xl mb-4">🏫</div>
+          <p class="text-wks-primary font-semibold">Wilhelm-Knapp-Schule</p>
+          <p class="text-sm text-muted-foreground">Frankfurter Str. 40 · 35781 Weilburg</p>
+        </div>
+        <!-- Decorative corner -->
+        <div class="absolute top-4 right-4 w-16 h-16 rounded-full bg-wks-gold/10 border-2 border-wks-gold/20"></div>
+        <div class="absolute bottom-4 left-4 w-10 h-10 rounded-full bg-wks-primary/10"></div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {[
+        { num: '2.000+', label: 'Schülerinnen und Schüler', icon: '👩‍🎓' },
+        { num: '120+', label: 'Lehrkräfte', icon: '👩‍🏫' },
+        { num: '6', label: 'Berufsfelder', icon: '🔧' },
+      ].map((item, i) => (
+        <div
+          class="bg-white rounded-2xl border text-center p-8 shadow-sm hover:shadow-md transition-all animate-on-scroll"
+          style={`transition-delay: ${i * 100}ms`}
+        >
+          <div class="text-4xl mb-3">{item.icon}</div>
+          <div class="text-4xl font-extrabold text-wks-primary mb-2">{item.num}</div>
+          <div class="text-sm text-muted-foreground font-medium">{item.label}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,55 @@
+---
+const steps = [
+  {
+    num: '1',
+    title: 'Schulform wählen',
+    text: 'Informieren Sie sich über unsere Schulformen und wählen Sie den passenden Bildungsgang für Ihre Zukunft.',
+  },
+  {
+    num: '2',
+    title: 'Formular ausfüllen',
+    text: 'Füllen Sie das Online-Bewerbungsformular aus und laden Sie die erforderlichen Unterlagen hoch.',
+  },
+  {
+    num: '3',
+    title: 'Bestätigung erhalten',
+    text: 'Sie erhalten eine Eingangsbestätigung und werden über den weiteren Verlauf Ihrer Bewerbung informiert.',
+  },
+];
+---
+
+<section class="py-20 bg-gradient-to-br from-wks-dark to-wks-primary text-white">
+  <div class="container">
+    <div class="text-center mb-14 animate-on-scroll">
+      <h2 class="text-3xl md:text-4xl font-extrabold mb-3 text-white">
+        Jetzt bewerben!
+      </h2>
+      <div class="w-16 h-1 bg-wks-gold rounded-full mx-auto mb-4"></div>
+      <p class="text-white/80 text-lg max-w-xl mx-auto">
+        In nur wenigen Schritten zur Bewerbung an der Wilhelm-Knapp-Schule
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      {steps.map((step, i) => (
+        <div class="text-center px-4 animate-on-scroll" style={`transition-delay: ${i * 150}ms`}>
+          <div class="w-14 h-14 rounded-full bg-wks-gold flex items-center justify-center text-xl font-extrabold mx-auto mb-5 shadow-lg">
+            {step.num}
+          </div>
+          <h3 class="text-xl font-bold mb-3">{step.title}</h3>
+          <p class="text-white/75 leading-relaxed text-sm">{step.text}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="text-center animate-on-scroll">
+      <a
+        href="/bewerbung"
+        class="inline-flex items-center gap-2 px-10 py-4 bg-wks-gold text-white font-bold rounded-xl text-lg hover:bg-wks-gold-dark transition-all hover:-translate-y-0.5 hover:shadow-xl shadow-lg"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Zum Bewerbungsformular
+      </a>
+    </div>
+  </div>
+</section>

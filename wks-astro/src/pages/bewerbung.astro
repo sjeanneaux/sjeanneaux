@@ -1,0 +1,67 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BewerbungForm from '../components/BewerbungForm.tsx';
+---
+
+<Layout
+  title="Bewerbung"
+  description="Jetzt an der Wilhelm-Knapp-Schule Weilburg bewerben – Berufliches Gymnasium, Fachoberschule, Berufsfachschule und mehr."
+>
+  <!-- Page Header -->
+  <div class="bg-wks-navy text-white py-14">
+    <div class="container">
+      <div class="text-xs text-white/60 mb-3 flex items-center gap-2">
+        <a href="/" class="hover:text-white transition-colors">Startseite</a>
+        <span>/</span>
+        <span>Bewerbung</span>
+      </div>
+      <h1 class="text-4xl font-extrabold mb-3">Jetzt bewerben</h1>
+      <p class="text-white/75 text-lg max-w-2xl">In wenigen Schritten zu Ihrem Bildungsweg an der Wilhelm-Knapp-Schule Weilburg.</p>
+    </div>
+  </div>
+
+  <!-- Steps Banner -->
+  <div class="bg-wks-orange/10 border-b border-wks-orange/20">
+    <div class="container py-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+        {[
+          { n: '1', t: 'Schulform wählen', s: 'Informieren Sie sich über unsere Bildungsangebote.' },
+          { n: '2', t: 'Formular ausfüllen', s: 'Alle Felder ausfüllen und absenden.' },
+          { n: '3', t: 'Bestätigung erhalten', s: 'Wir melden uns per E-Mail bei Ihnen.' },
+        ].map(s => (
+          <div class="flex gap-4 items-start">
+            <div class="w-9 h-9 rounded-full bg-wks-orange text-white flex items-center justify-center font-bold text-sm shrink-0">{s.n}</div>
+            <div>
+              <p class="font-semibold text-wks-navy text-sm">{s.t}</p>
+              <p class="text-xs text-muted-foreground mt-0.5">{s.s}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="py-16 bg-[#f5f7fa]">
+    <div class="container">
+      <div class="max-w-2xl mx-auto bg-white rounded-2xl border shadow-sm p-8 md:p-10">
+        <h2 class="text-2xl font-bold text-wks-navy mb-2">Bewerbungsformular</h2>
+        <p class="text-muted-foreground text-sm mb-8">
+          Alle Felder mit <span class="text-destructive font-semibold">*</span> sind Pflichtfelder.
+          Nach dem Absenden erhalten Sie eine Bestätigungs-E-Mail.
+        </p>
+        <BewerbungForm client:load />
+      </div>
+
+      <!-- Info box -->
+      <div class="max-w-2xl mx-auto mt-6 p-5 bg-wks-navy/5 rounded-xl border border-wks-navy/10 text-sm text-muted-foreground">
+        <p class="font-semibold text-wks-navy mb-2">Wichtige Hinweise:</p>
+        <ul class="space-y-1 list-disc list-inside">
+          <li>Anmeldefrist Berufliches Gymnasium & FOS: <strong>30. April</strong></li>
+          <li>Für die Berufsschule wenden Sie sich direkt an das Sekretariat.</li>
+          <li>Bei Fragen: <a href="tel:+4964714890" class="text-wks-navy underline">06471 / 489-0</a> oder <a href="mailto:verwaltung@wks-weilburg.de" class="text-wks-navy underline">verwaltung@wks-weilburg.de</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Layout>

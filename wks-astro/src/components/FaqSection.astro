@@ -1,0 +1,16 @@
+---
+import FaqAccordion from './FaqAccordion.tsx';
+---
+
+<section id="faq" class="py-20 bg-muted/30">
+  <div class="container">
+    <div class="text-center mb-14 animate-on-scroll">
+      <h2 class="section-heading">Häufig gestellte Fragen</h2>
+      <p class="section-subtitle">Antworten auf die wichtigsten Fragen rund um die Wilhelm-Knapp-Schule</p>
+    </div>
+
+    <div class="animate-on-scroll">
+      <FaqAccordion client:visible />
+    </div>
+  </div>
+</section>

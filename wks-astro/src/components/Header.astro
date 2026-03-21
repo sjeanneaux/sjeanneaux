@@ -1,0 +1,41 @@
+---
+import MobileNav from './MobileNav.tsx';
+---
+
+<header class="bg-wks-navy sticky top-0 z-40 shadow-md">
+  <div class="container flex items-center justify-between py-3">
+    <!-- Logo -->
+    <a href="/" aria-label="Wilhelm-Knapp-Schule Startseite" class="shrink-0">
+      <img src="/logo.svg" alt="WKS Logo" class="h-14 w-14" />
+    </a>
+
+    <!-- Desktop Nav -->
+    <nav class="hidden md:flex items-center gap-2" aria-label="Hauptnavigation">
+      <div class="relative group">
+        <a href="/schulformen" class="nav-link">
+          Educational Paths
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:rotate-180 inline-block ml-0.5"><path d="m6 9 6 6 6-6"/></svg>
+        </a>
+        <div class="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-xl border py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+          <a href="/schulformen#berufliches-gymnasium" class="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-wks-light hover:text-wks-navy transition-colors">Berufliches Gymnasium</a>
+          <a href="/schulformen#fachoberschule" class="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-wks-light hover:text-wks-navy transition-colors">Fachoberschule</a>
+          <a href="/schulformen#berufsfachschule" class="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-wks-light hover:text-wks-navy transition-colors">Berufsfachschule</a>
+          <a href="/schulformen#berufsschule" class="block px-4 py-2.5 text-sm text-foreground/80 hover:bg-wks-light hover:text-wks-navy transition-colors">Duale Ausbildung</a>
+        </div>
+      </div>
+      <a href="/#ausbildungsberufe" class="nav-link">Terraream</a>
+      <a href="/#ueber-uns" class="nav-link">Our Team</a>
+      <a href="/#termine" class="nav-link">Social Life</a>
+      <a href="/#kontakt" class="nav-link">Contact</a>
+    </nav>
+
+    <!-- Mobile -->
+    <MobileNav client:load />
+  </div>
+</header>
+
+<style>
+  .nav-link {
+    @apply px-4 py-2 text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 rounded-lg transition-all;
+  }
+</style>

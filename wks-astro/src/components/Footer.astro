@@ -1,0 +1,96 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="relative bg-wks-navy text-white/75 overflow-hidden">
+  <!-- WKS Seal Watermark -->
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true">
+    <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" class="w-72 h-72 opacity-[0.07]">
+      <circle cx="150" cy="150" r="145" fill="none" stroke="white" stroke-width="4"/>
+      <circle cx="150" cy="150" r="120" fill="none" stroke="white" stroke-width="2"/>
+      <circle cx="150" cy="150" r="95" fill="none" stroke="white" stroke-width="1.5"/>
+      <!-- WKS text -->
+      <text x="150" y="168" text-anchor="middle" font-family="Inter,serif" font-size="54" font-weight="800" fill="white" letter-spacing="4">WKS</text>
+      <!-- Top arc text -->
+      <path id="fa" fill="none" d="M 20,150 A 130,130 0 0,1 280,150"/>
+      <text font-family="Inter,sans-serif" font-size="16" fill="white" font-weight="600" letter-spacing="4">
+        <textPath href="#fa" startOffset="8%">WILHEL M · KNA PP · SCHULE</textPath>
+      </text>
+      <!-- Bottom arc text -->
+      <path id="fb" fill="none" d="M 280,150 A 130,130 0 0,1 20,150"/>
+      <text font-family="Inter,sans-serif" font-size="14" fill="white" font-weight="500" letter-spacing="3">
+        <textPath href="#fb" startOffset="15%">WEILBURG · SEIT · 1905</textPath>
+      </text>
+      <!-- Decorative stars -->
+      <text x="40" y="155" font-size="14" fill="white">✦</text>
+      <text x="252" y="155" font-size="14" fill="white">✦</text>
+    </svg>
+  </div>
+
+  <!-- Main Footer Content -->
+  <div class="container relative z-10 pt-14 pb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+
+      <!-- Contact Info -->
+      <div>
+        <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-widest">Contact Info</h4>
+        <ul class="space-y-2 text-sm">
+          <li>+85 583733 85</li>
+          <li>Info - +5 23220 627</li>
+          <li>
+            <a href="mailto:verwaltung@wks-weilburg.de" class="hover:text-white transition-colors">
+              wilhelmknappschule.ee
+            </a>
+          </li>
+          <li class="pt-2 text-white/50">Frankfurter Str. 40, 35781 Weilburg</li>
+        </ul>
+      </div>
+
+      <!-- Important Links (2 columns) -->
+      <div>
+        <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-widest">Important Links</h4>
+        <div class="grid grid-cols-2 gap-x-4">
+          <ul class="space-y-2 text-sm">
+            <li><a href="/#ueber-uns" class="hover:text-white transition-colors">About</a></li>
+            <li><a href="/#termine" class="hover:text-white transition-colors">Social Life</a></li>
+            <li><a href="/#kontakt" class="hover:text-white transition-colors">Contact</a></li>
+          </ul>
+          <ul class="space-y-2 text-sm">
+            <li><a href="/schulformen" class="hover:text-white transition-colors">Our /steas</a></li>
+            <li><a href="/bewerbung" class="hover:text-white transition-colors">Importen Links</a></li>
+            <li><a href="/#faq" class="hover:text-white transition-colors">Economical Links</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Social Media -->
+      <div>
+        <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-widest">Social Media</h4>
+        <div class="flex gap-4">
+          <!-- Instagram -->
+          <a href="#" aria-label="Instagram" class="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center hover:bg-wks-orange transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          </a>
+          <!-- Facebook -->
+          <a href="#" aria-label="Facebook" class="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center hover:bg-wks-orange transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="#" aria-label="LinkedIn" class="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center hover:bg-wks-orange transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-white/50">
+      <span>Copyright &copy; {currentYear} - Wilhelm-Knapp-Schule</span>
+      <div class="flex gap-4">
+        <a href="/impressum" class="hover:text-white transition-colors">Impressum</a>
+        <a href="/datenschutz" class="hover:text-white transition-colors">Datenschutz</a>
+      </div>
+    </div>
+  </div>
+</footer>
