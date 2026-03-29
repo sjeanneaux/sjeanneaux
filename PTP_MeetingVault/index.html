@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTP MeetingVault</title>
+  <style>
+    :root {
+      --bg:          #0d0d14;
+      --surface:     #161622;
+      --surface2:    #1e1e30;
+      --surface3:    #26263d;
+      --border:      #2e2e4a;
+      --border-hov:  #4a4a70;
+      --accent:      #6366f1;
+      --accent-hov:  #818cf8;
+      --accent-dim:  rgba(99,102,241,0.12);
+      --text:        #e2e8f0;
+      --muted:       #8892a4;
+      --faint:       #4a5568;
+      --green:       #22c55e;
+      --orange:      #f97316;
+      --red:         #ef4444;
+      --radius:      8px;
+      --radius-lg:   12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+    /* ── HEADER ── */
+    .hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      height: 52px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .logo { font-size: 16px; font-weight: 700; color: var(--accent-hov); letter-spacing: -.3px; }
+    .logo em { color: var(--muted); font-style: normal; font-weight: 400; }
+    .spacer { flex: 1; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 13px;
+      border-radius: var(--radius); border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text);
+      cursor: pointer; font-size: 13px; font-family: inherit;
+      transition: background .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .btn:hover    { background: var(--surface3); border-color: var(--border-hov); }
+    .btn-primary  { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hov); border-color: var(--accent-hov); }
+    .btn-sm       { padding: 4px 10px; font-size: 12px; }
+    .btn-danger   { color: var(--red); }
+    .btn-danger:hover { background: rgba(239,68,68,.1); border-color: var(--red); }
+    .btn-ghost    { background: transparent; border-color: transparent; color: var(--muted); }
+    .btn-ghost:hover { background: var(--surface2); color: var(--text); border-color: var(--border); }
+
+    /* ── LAYOUT ── */
+    .layout { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px; flex-shrink: 0;
+      background: var(--surface); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+    }
+    .sb-top {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .meeting-list { flex: 1; overflow-y: auto; padding: 6px; }
+
+    .meeting-item {
+      padding: 9px 10px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      border: 1px solid transparent;
+      margin-bottom: 3px;
+      transition: background .15s, border-color .15s;
+    }
+    .meeting-item:hover  { background: var(--surface2); }
+    .meeting-item.active { background: var(--accent-dim); border-color: var(--accent); }
+    .mi-top   { display: flex; align-items: center; gap: 4px; }
+    .mi-name  { flex: 1; font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mi-date  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .mi-meta  { font-size: 11px; color: var(--faint); }
+    .mi-del   { opacity: 0; background: none; border: none; color: var(--faint); cursor: pointer; font-size: 13px; padding: 2px 4px; border-radius: 4px; transition: all .15s; flex-shrink: 0; }
+    .meeting-item:hover .mi-del { opacity: 1; }
+    .mi-del:hover { color: var(--red); }
+
+    /* ── EMPTY STATES ── */
+    .empty {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; height: 100%;
+      color: var(--faint); text-align: center; gap: 12px; padding: 24px;
+    }
+    .empty-icon  { font-size: 44px; }
+    .empty-title { font-size: 15px; font-weight: 600; color: var(--muted); }
+    .empty-desc  { font-size: 13px; max-width: 280px; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ── MEETING HEADER ── */
+    .mhdr {
+      padding: 14px 20px 10px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .mhdr-row1 { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .mtitle {
+      flex: 1; font-size: 18px; font-weight: 700;
+      background: transparent; border: none; color: var(--text);
+      outline: none; padding: 2px 0;
+      border-bottom: 1px solid transparent;
+    }
+    .mtitle:focus { border-bottom-color: var(--accent); }
+    .mhdr-row2 { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .mf { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .mf-lbl { color: var(--muted); flex-shrink: 0; }
+    .mf-inp {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--text); padding: 3px 8px;
+      font-size: 12px; font-family: inherit; outline: none;
+    }
+    .mf-inp:focus { border-color: var(--accent); }
+    .mf-wide { flex: 1; min-width: 180px; }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex; gap: 2px; padding: 8px 20px 0;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .tab {
+      padding: 7px 14px; border-radius: var(--radius) var(--radius) 0 0;
+      cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted);
+      border: 1px solid transparent; background: transparent;
+      transition: all .15s; font-family: inherit; display: flex; align-items: center; gap: 5px;
+    }
+    .tab:hover  { color: var(--text); background: var(--surface2); }
+    .tab.active { color: var(--text); background: var(--surface2); border-color: var(--border); border-bottom-color: var(--surface2); }
+    .badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      background: var(--surface3); border-radius: 9px; font-size: 11px; color: var(--muted);
+    }
+
+    /* ── CONTENT AREA ── */
+    .content-area { flex: 1; display: flex; overflow: hidden; }
+    .tab-content { flex: 1; overflow-y: auto; padding: 20px; }
+
+    /* ── SOURCE PANEL ── */
+    .src-panel {
+      width: 340px; flex-shrink: 0;
+      border-left: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; flex-direction: column;
+    }
+    .src-panel.hidden { display: none; }
+    .src-hdr {
+      padding: 8px 10px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .src-tabs { display: flex; gap: 4px; flex: 1; overflow-x: auto; }
+    .src-tab {
+      padding: 3px 9px; border-radius: var(--radius); cursor: pointer;
+      font-size: 11px; background: var(--surface2); color: var(--muted);
+      white-space: nowrap; border: 1px solid transparent; transition: all .15s;
+    }
+    .src-tab.active { background: var(--accent-dim); border-color: var(--accent); color: var(--text); }
+    .src-body {
+      flex: 1; overflow-y: auto; padding: 12px 14px;
+      font-size: 12px; line-height: 1.7; color: var(--muted);
+      white-space: pre-wrap; font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* ── SECTION HEADER ── */
+    .sec-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .sec-title { font-size: 15px; font-weight: 700; }
+    .sec-note  { color: var(--muted); font-weight: 400; font-size: 13px; }
+    .sec-acts  { display: flex; gap: 6px; }
+
+    /* ── TABLES ── */
+    .dtable { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .dtable th {
+      text-align: left; padding: 7px 10px;
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .5px;
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    .dtable td { padding: 5px 7px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .dtable tr:hover td { background: var(--surface2); }
+
+    .ci {
+      background: transparent; border: none; color: var(--text);
+      width: 100%; font-size: 13px; font-family: inherit;
+      outline: none; padding: 2px 4px; border-radius: 4px;
+    }
+    .ci:focus { background: var(--surface3); }
+
+    /* ── AMPEL INDICATOR ── */
+    .ampel-dot {
+      display: inline-block; width: 13px; height: 13px;
+      border-radius: 50%; flex-shrink: 0;
+    }
+    .ampel-gruen  { background: var(--green);  box-shadow: 0 0 5px rgba(34,197,94,.5); }
+    .ampel-orange { background: var(--orange); box-shadow: 0 0 5px rgba(249,115,22,.5); }
+    .ampel-rot    { background: var(--red);    box-shadow: 0 0 5px rgba(239,68,68,.5); }
+
+    /* ── SELECTS ── */
+    .sel {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--text); padding: 2px 6px;
+      font-size: 12px; font-family: inherit; outline: none; cursor: pointer;
+    }
+    .sel:focus { border-color: var(--accent); }
+    .sel-sm { padding: 2px 4px; max-width: 120px; font-size: 11px; }
+
+    /* ── DEL BUTTON ── */
+    .del {
+      background: none; border: none; color: var(--faint);
+      cursor: pointer; padding: 2px 6px; border-radius: 4px;
+      font-size: 13px; transition: all .15s;
+    }
+    .del:hover { color: var(--red); background: rgba(239,68,68,.1); }
+
+    /* ── ADD ROW ── */
+    .add-row {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 10px; color: var(--muted); cursor: pointer;
+      font-size: 12px; border-radius: var(--radius);
+      width: 100%; background: none; border: 1px dashed transparent;
+      font-family: inherit; transition: all .15s; margin-top: 4px;
+    }
+    .add-row:hover { color: var(--accent); background: var(--accent-dim); border-color: var(--accent-dim); }
+
+    /* ── BULLET LIST ── */
+    .bullet-list { display: flex; flex-direction: column; gap: 5px; }
+    .bullet-item { display: flex; align-items: flex-start; gap: 8px; }
+    .bullet-dot  { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 9px; flex-shrink: 0; }
+    .bullet-num  { color: var(--muted); font-size: 12px; font-weight: 600; min-width: 20px; margin-top: 6px; flex-shrink: 0; }
+    .bullet-inp  {
+      flex: 1; background: transparent; border: none;
+      border-bottom: 1px solid transparent; color: var(--text);
+      font-size: 14px; font-family: inherit; outline: none; padding: 4px 0; line-height: 1.5;
+    }
+    .bullet-inp:focus { border-bottom-color: var(--accent); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: var(--surface3); border: 1px solid var(--border);
+      color: var(--text); padding: 9px 20px; border-radius: var(--radius-lg);
+      font-size: 13px; opacity: 0; transition: all .25s;
+      z-index: 9999; box-shadow: 0 8px 32px rgba(0,0,0,.5); white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.ok   { border-color: var(--green); }
+    #toast.err  { border-color: var(--red); }
+
+    #fileInput { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ HEADER -->
+<header class="hdr">
+  <div class="logo">PTP <em>Meeting</em>Vault</div>
+  <div class="spacer"></div>
+  <button class="btn" onclick="doImport()">↑ Input importieren</button>
+  <button class="btn" onclick="exportSession()">↓ Session speichern</button>
+  <button class="btn btn-ghost btn-sm" onclick="importSession()">↑ Session laden</button>
+  <input type="file" id="fileInput"    multiple accept=".txt,.md"   onchange="onTextFiles(event)">
+  <input type="file" id="sessionInput" accept=".json"               onchange="onSessionFile(event)">
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════ LAYOUT -->
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sb-top">
+      <button class="btn btn-primary" onclick="newMeeting()">+ Neues Meeting</button>
+    </div>
+    <div class="meeting-list" id="meetingList"></div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main" id="mainArea">
+    <div class="empty">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">Kein Meeting ausgewählt</div>
+      <div class="empty-desc">Erstelle ein neues Meeting oder wähle eines aus der Liste.</div>
+      <button class="btn btn-primary" onclick="newMeeting()">+ Neues Meeting erstellen</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ TOAST -->
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════ SCRIPT -->
+<script>
+'use strict';
+
+// ────────────────────────────────────────────────────────── STATE
+const S = {
+  meetings: [],
+  curId:         null,
+  curTab:        'minutes',
+  curSrcIdx:     0,
+};
+
+function uid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+function cur()  { return S.meetings.find(m => m.id === S.curId) || null; }
+
+function makeMeeting() {
+  return {
+    id: uid(),
+    name: 'Meeting ' + new Date().toISOString().slice(0,10),
+    date: new Date().toISOString().slice(0,10),
+    participants: '',
+    sources: [],
+    minutes:   [''],
+    decisions: [],
+    actions:   [],
+    risks:     [],
+    questions: [''],
+  };
+}
+
+// ────────────────────────────────────────────────────────── TOAST
+let _toastT;
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(_toastT);
+  _toastT = setTimeout(() => el.className = '', 3200);
+}
+
+// ────────────────────────────────────────────────────────── MEETINGS
+function newMeeting() {
+  const m = makeMeeting();
+  S.meetings.unshift(m);
+  S.curId    = m.id;
+  S.curTab   = 'minutes';
+  S.curSrcIdx = 0;
+  renderSidebar();
+  renderMain();
+}
+
+function selectMeeting(id) {
+  S.curId    = id;
+  S.curTab   = 'minutes';
+  S.curSrcIdx = 0;
+  renderSidebar();
+  renderMain();
+}
+
+function deleteMeeting(id, e) {
+  e.stopPropagation();
+  if (!confirm('Meeting löschen?')) return;
+  S.meetings = S.meetings.filter(m => m.id !== id);
+  if (S.curId === id) S.curId = S.meetings[0]?.id || null;
+  renderSidebar();
+  renderMain();
+}
+
+// ────────────────────────────────────────────────────────── FILE IMPORT
+function doImport() { document.getElementById('fileInput').click(); }
+
+function onTextFiles(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  let m = cur();
+  if (!m) { newMeeting(); m = cur(); }
+  let done = 0;
+  files.forEach(f => {
+    const r = new FileReader();
+    r.onload = ev => {
+      const idx = m.sources.findIndex(s => s.name === f.name);
+      if (idx >= 0) m.sources[idx] = { name: f.name, content: ev.target.result };
+      else          m.sources.push({ name: f.name, content: ev.target.result });
+      done++;
+      if (done === files.length) {
+        S.curSrcIdx = m.sources.length - 1;
+        renderMain();
+        toast(`${files.length} Datei(en) importiert`, 'ok');
+      }
+    };
+    r.readAsText(f);
+  });
+  e.target.value = '';
+}
+
+// ────────────────────────────────────────────────────────── SESSION EXPORT/IMPORT
+function exportSession() {
+  const json = JSON.stringify({ version: '1.0', app: 'PTP_MeetingVault',
+    exportedAt: new Date().toISOString(), meetings: S.meetings }, null, 2);
+  dl('meetingvault_' + new Date().toISOString().slice(0,10) + '.json', json, 'application/json');
+  toast('Session exportiert', 'ok');
+}
+
+function importSession() {
+  document.getElementById('sessionInput').click();
+}
+
+function onSessionFile(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data.meetings)) throw new Error('Kein gültiges MeetingVault-Format');
+      S.meetings = data.meetings;
+      S.curId    = S.meetings[0]?.id || null;
+      S.curTab   = 'minutes';
+      S.curSrcIdx = 0;
+      renderSidebar();
+      renderMain();
+      toast(`${f.name} geladen · ${S.meetings.length} Meetings`, 'ok');
+    } catch(err) {
+      toast('Fehler: ' + err.message, 'err');
+    }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+}
+
+// ────────────────────────────────────────────────────────── SIDEBAR
+function renderSidebar() {
+  const el = document.getElementById('meetingList');
+  if (!S.meetings.length) {
+    el.innerHTML = '<div class="empty" style="padding:20px 10px;font-size:12px"><div>Noch keine Meetings.<br>+ Neues Meeting erstellen.</div></div>';
+    return;
+  }
+  el.innerHTML = S.meetings.map(m => {
+    const n = m.minutes.filter(x=>x).length + m.decisions.length +
+              m.actions.length + m.risks.length + m.questions.filter(x=>x).length;
+    return `
+      <div class="meeting-item${m.id===S.curId?' active':''}" onclick="selectMeeting('${m.id}')">
+        <div class="mi-top">
+          <div class="mi-name">${esc(m.name)}</div>
+          <button class="mi-del" onclick="deleteMeeting('${m.id}',event)" title="Löschen">✕</button>
+        </div>
+        <div class="mi-date">${m.date||'—'}</div>
+        <div class="mi-meta">${m.sources.length} Quellen · ${n} Einträge</div>
+      </div>`;
+  }).join('');
+}
+
+// ────────────────────────────────────────────────────────── MAIN RENDER
+function renderMain() {
+  const area = document.getElementById('mainArea');
+  const m = cur();
+  if (!m) {
+    area.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">Kein Meeting ausgewählt</div>
+        <div class="empty-desc">Erstelle ein neues Meeting oder wähle eines aus der Liste.</div>
+        <button class="btn btn-primary" onclick="newMeeting()">+ Neues Meeting erstellen</button>
+      </div>`;
+    return;
+  }
+
+  const TAB_LABELS = {
+    minutes:   'Protokoll',
+    decisions: 'Entscheidungen',
+    actions:   'Maßnahmen',
+    risks:     'Risiken',
+    questions: 'Offene Fragen',
+  };
+  const counts = {
+    minutes:   m.minutes.filter(x=>x).length,
+    decisions: m.decisions.length,
+    actions:   m.actions.length,
+    risks:     m.risks.length,
+    questions: m.questions.filter(x=>x).length,
+  };
+
+  const srcPanel = m.sources.length ? `
+    <div class="src-panel" id="srcPanel">
+      <div class="src-hdr">
+        <div class="src-tabs">
+          ${m.sources.map((s,i) => `
+            <button class="src-tab${i===S.curSrcIdx?' active':''}" onclick="selSrc(${i})">${esc(s.name)}</button>
+          `).join('')}
+        </div>
+        <button class="del" title="Quelle entfernen" onclick="removeSrc(${S.curSrcIdx})">✕</button>
+      </div>
+      <div class="src-body">${esc(m.sources[S.curSrcIdx]?.content||'')}</div>
+    </div>` : '';
+
+  area.innerHTML = `
+    <div class="mhdr">
+      <div class="mhdr-row1">
+        <input class="mtitle" value="${esc(m.name)}" oninput="setField('name',this.value)" placeholder="Meeting-Titel">
+        <button class="btn btn-sm" onclick="doImport()">↑ Importieren</button>
+      </div>
+      <div class="mhdr-row2">
+        <div class="mf">
+          <span class="mf-lbl">Datum:</span>
+          <input type="date" class="mf-inp" value="${m.date}" oninput="setField('date',this.value)">
+        </div>
+        <div class="mf" style="flex:1">
+          <span class="mf-lbl">Teilnehmer:</span>
+          <input class="mf-inp mf-wide" value="${esc(m.participants)}"
+            oninput="setField('participants',this.value)" placeholder="Namen, kommagetrennt">
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      ${Object.entries(TAB_LABELS).map(([k,v]) => `
+        <button class="tab${S.curTab===k?' active':''}" onclick="switchTab('${k}')">
+          ${v}${counts[k]>0?`<span class="badge">${counts[k]}</span>`:''}
+        </button>`).join('')}
+    </div>
+
+    <div class="content-area">
+      <div class="tab-content" id="tabContent">${renderTab(m)}</div>
+      ${srcPanel}
+    </div>`;
+}
+
+function renderTab(m) {
+  switch (S.curTab) {
+    case 'minutes':   return tplMinutes(m);
+    case 'decisions': return tplDecisions(m);
+    case 'actions':   return tplActions(m);
+    case 'risks':     return tplRisks(m);
+    case 'questions': return tplQuestions(m);
+  }
+  return '';
+}
+
+function switchTab(tab) {
+  S.curTab = tab;
+  const tc = document.getElementById('tabContent');
+  const m  = cur();
+  if (tc && m) tc.innerHTML = renderTab(m);
+  document.querySelectorAll('.tab').forEach(el =>
+    el.classList.toggle('active', el.getAttribute('onclick')?.includes(`'${tab}'`)));
+}
+
+function selSrc(i)    { S.curSrcIdx = i; renderMain(); }
+function removeSrc(i) {
+  const m = cur(); if (!m) return;
+  m.sources.splice(i, 1);
+  S.curSrcIdx = Math.max(0, i - 1);
+  renderMain();
+}
+
+function setField(k, v) {
+  const m = cur(); if (m) { m[k] = v; renderSidebar(); }
+}
+
+function reTab() {
+  const tc = document.getElementById('tabContent');
+  const m  = cur();
+  if (tc && m) tc.innerHTML = renderTab(m);
+  renderSidebar();
+}
+
+// helper: <option> list for source files
+function srcOpts(m, selected) {
+  return m.sources.map(s =>
+    `<option value="${esc(s.name)}"${s.name===selected?' selected':''}>${esc(s.name)}</option>`
+  ).join('');
+}
+
+// ────────────────────────────────────────────────────────── MINUTES
+function tplMinutes(m) {
+  return `
+    <div class="sec-hdr">
+      <div class="sec-title">Protokoll <span class="sec-note">(max. 12 Punkte)</span></div>
+      <div class="sec-acts">
+        <button class="btn btn-sm" onclick="expMinutes()">↓ Minutes.md</button>
+        <button class="btn btn-sm" onclick="expFollowUp()">↓ FollowUp_Email.md</button>
+      </div>
+    </div>
+    <div class="bullet-list">
+      ${m.minutes.map((b,i) => `
+        <div class="bullet-item">
+          <div class="bullet-dot"></div>
+          <input class="bullet-inp" value="${esc(b)}"
+            oninput="updMin(${i},this.value)"
+            onkeydown="keyMin(event,${i})"
+            placeholder="Protokollpunkt eingeben…">
+          <button class="del" onclick="rmMin(${i})">✕</button>
+        </div>`).join('')}
+    </div>
+    ${m.minutes.length < 12
+      ? `<button class="add-row" onclick="addMin()">+ Punkt hinzufügen</button>`
+      : `<p style="color:var(--muted);font-size:12px;margin-top:8px;padding:8px">Maximum von 12 Punkten erreicht.</p>`}`;
+}
+
+function addMin() {
+  const m = cur(); if (!m || m.minutes.length >= 12) return;
+  m.minutes.push(''); reTab();
+  setTimeout(() => { const all = document.querySelectorAll('.bullet-inp'); all[all.length-1]?.focus(); }, 0);
+}
+function rmMin(i)       { const m=cur(); if(!m) return; m.minutes.splice(i,1); if(!m.minutes.length) m.minutes=['']; reTab(); }
+function updMin(i,v)    { const m=cur(); if(m) m.minutes[i]=v; renderSidebar(); }
+function keyMin(e,i)    {
+  if (e.key==='Enter')                          { e.preventDefault(); addMin(); }
+  if (e.key==='Backspace' && !e.target.value)   { e.preventDefault(); rmMin(i); }
+}
+
+// ────────────────────────────────────────────────────────── DECISIONS
+function tplDecisions(m) {
+  return `
+    <div class="sec-hdr">
+      <div class="sec-title">Entscheidungen</div>
+      <div class="sec-acts"><button class="btn btn-sm" onclick="expDecisions()">↓ DecisionLog.csv</button></div>
+    </div>
+    <table class="dtable">
+      <thead><tr>
+        <th style="width:28%">Entscheidung</th>
+        <th style="width:22%">Begründung</th>
+        <th style="width:12%">Owner</th>
+        <th style="width:11%">Deadline</th>
+        <th style="width:14%">Quelle</th>
+        <th style="width:3%"></th>
+      </tr></thead>
+      <tbody>
+        ${m.decisions.map((d,i)=>`
+          <tr>
+            <td><input class="ci" value="${esc(d.decision)}" oninput="updD(${i},'decision',this.value)" placeholder="Entscheidung…"></td>
+            <td><input class="ci" value="${esc(d.reason)}"   oninput="updD(${i},'reason',this.value)"   placeholder="[OFFEN]"></td>
+            <td><input class="ci" value="${esc(d.owner)}"    oninput="updD(${i},'owner',this.value)"    placeholder="[OFFEN]"></td>
+            <td><input type="date" class="ci" value="${d.deadline}" oninput="updD(${i},'deadline',this.value)"></td>
+            <td><select class="sel sel-sm" onchange="updD(${i},'source',this.value)">
+              <option value="">—</option>${srcOpts(m,d.source)}</select></td>
+            <td><button class="del" onclick="rmD(${i})">✕</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    <button class="add-row" onclick="addD()">+ Entscheidung hinzufügen</button>`;
+}
+function addD()       { const m=cur();if(!m)return; m.decisions.push({id:uid(),decision:'',reason:'',owner:'',deadline:'',source:''}); reTab(); }
+function rmD(i)       { const m=cur();if(!m)return; m.decisions.splice(i,1); reTab(); }
+function updD(i,k,v)  { const m=cur();if(m) m.decisions[i][k]=v; renderSidebar(); }
+
+// ────────────────────────────────────────────────────────── ACTIONS
+function tplActions(m) {
+  return `
+    <div class="sec-hdr">
+      <div class="sec-title">Maßnahmen / Action Items</div>
+      <div class="sec-acts"><button class="btn btn-sm" onclick="expActions()">↓ Actions.csv</button></div>
+    </div>
+    <table class="dtable">
+      <thead><tr>
+        <th style="width:30%">Maßnahme</th>
+        <th style="width:12%">Owner</th>
+        <th style="width:11%">Deadline</th>
+        <th style="width:12%">Status</th>
+        <th style="width:14%">Quelle</th>
+        <th style="width:3%"></th>
+      </tr></thead>
+      <tbody>
+        ${m.actions.map((a,i)=>`
+          <tr>
+            <td><input class="ci" value="${esc(a.action)}" oninput="updA(${i},'action',this.value)" placeholder="Maßnahme…"></td>
+            <td><input class="ci" value="${esc(a.owner)}"  oninput="updA(${i},'owner',this.value)"  placeholder="[OFFEN]"></td>
+            <td><input type="date" class="ci" value="${a.deadline}" oninput="updA(${i},'deadline',this.value)"></td>
+            <td><select class="sel" onchange="updA(${i},'status',this.value)">
+              <option${a.status==='Offen'?' selected':''}>Offen</option>
+              <option${a.status==='In Bearbeitung'?' selected':''}>In Bearbeitung</option>
+              <option${a.status==='Erledigt'?' selected':''}>Erledigt</option>
+            </select></td>
+            <td><select class="sel sel-sm" onchange="updA(${i},'source',this.value)">
+              <option value="">—</option>${srcOpts(m,a.source)}</select></td>
+            <td><button class="del" onclick="rmA(${i})">✕</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    <button class="add-row" onclick="addA()">+ Maßnahme hinzufügen</button>`;
+}
+function addA()      { const m=cur();if(!m)return; m.actions.push({id:uid(),action:'',owner:'',deadline:'',status:'Offen',source:''}); reTab(); }
+function rmA(i)      { const m=cur();if(!m)return; m.actions.splice(i,1); reTab(); }
+function updA(i,k,v) { const m=cur();if(m) m.actions[i][k]=v; renderSidebar(); }
+
+// ────────────────────────────────────────────────────────── RISKS
+function tplRisks(m) {
+  const ampelOpts = ['grün','orange','rot'];
+  return `
+    <div class="sec-hdr">
+      <div class="sec-title">Risiken</div>
+      <div class="sec-acts"><button class="btn btn-sm" onclick="expRisks()">↓ Risks.csv</button></div>
+    </div>
+    <table class="dtable">
+      <thead><tr>
+        <th style="width:7%">Ampel</th>
+        <th style="width:20%">Risiko</th>
+        <th style="width:16%">Impact</th>
+        <th style="width:19%">Mitigation</th>
+        <th style="width:11%">Owner</th>
+        <th style="width:14%">Quelle</th>
+        <th style="width:3%"></th>
+      </tr></thead>
+      <tbody>
+        ${m.risks.map((r,i)=>`
+          <tr>
+            <td style="text-align:center">
+              <select class="sel" style="width:76px" onchange="updR(${i},'ampel',this.value)">
+                ${ampelOpts.map(a=>`<option value="${a}"${r.ampel===a?' selected':''}>${a}</option>`).join('')}
+              </select>
+            </td>
+            <td><input class="ci" value="${esc(r.risiko)}"     oninput="updR(${i},'risiko',this.value)"     placeholder="Risiko…"></td>
+            <td><input class="ci" value="${esc(r.impact)}"     oninput="updR(${i},'impact',this.value)"     placeholder="[OFFEN]"></td>
+            <td><input class="ci" value="${esc(r.mitigation)}" oninput="updR(${i},'mitigation',this.value)" placeholder="[OFFEN]"></td>
+            <td><input class="ci" value="${esc(r.owner)}"      oninput="updR(${i},'owner',this.value)"      placeholder="[OFFEN]"></td>
+            <td><select class="sel sel-sm" onchange="updR(${i},'source',this.value)">
+              <option value="">—</option>${srcOpts(m,r.source)}</select></td>
+            <td><button class="del" onclick="rmR(${i})">✕</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    <button class="add-row" onclick="addR()">+ Risiko hinzufügen</button>`;
+}
+function addR()      { const m=cur();if(!m)return; m.risks.push({id:uid(),ampel:'grün',risiko:'',impact:'',mitigation:'',owner:'',source:''}); reTab(); }
+function rmR(i)      { const m=cur();if(!m)return; m.risks.splice(i,1); reTab(); }
+function updR(i,k,v) { const m=cur();if(m) m.risks[i][k]=v; renderSidebar(); }
+
+// ────────────────────────────────────────────────────────── QUESTIONS
+function tplQuestions(m) {
+  return `
+    <div class="sec-hdr">
+      <div class="sec-title">Offene Fragen <span class="sec-note">(max. 10)</span></div>
+    </div>
+    <div class="bullet-list">
+      ${m.questions.map((q,i)=>`
+        <div class="bullet-item">
+          <div class="bullet-num">${i+1}.</div>
+          <input class="bullet-inp" value="${esc(q)}"
+            oninput="updQ(${i},this.value)"
+            onkeydown="keyQ(event,${i})"
+            placeholder="Offene Frage…">
+          <button class="del" onclick="rmQ(${i})">✕</button>
+        </div>`).join('')}
+    </div>
+    ${m.questions.length < 10
+      ? `<button class="add-row" onclick="addQ()" style="margin-top:8px">+ Frage hinzufügen</button>`
+      : `<p style="color:var(--muted);font-size:12px;margin-top:8px;padding:8px">Maximum von 10 Fragen erreicht.</p>`}`;
+}
+function addQ()     { const m=cur();if(!m||m.questions.length>=10)return; m.questions.push(''); reTab(); setTimeout(()=>{ const a=document.querySelectorAll('.bullet-inp');a[a.length-1]?.focus();},0); }
+function rmQ(i)     { const m=cur();if(!m)return; m.questions.splice(i,1);if(!m.questions.length)m.questions=[''];reTab(); }
+function updQ(i,v)  { const m=cur();if(m)m.questions[i]=v;renderSidebar(); }
+function keyQ(e,i)  {
+  if(e.key==='Enter')                         {e.preventDefault();addQ();}
+  if(e.key==='Backspace'&&!e.target.value)    {e.preventDefault();rmQ(i);}
+}
+
+// ────────────────────────────────────────────────────────── EXPORTS
+function dl(name, content, mime) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type: mime }));
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function csvRow(cells) {
+  return cells.map(c => '"' + String(c||'').replace(/"/g,'""') + '"').join(',');
+}
+
+function expMinutes() {
+  const m = cur(); if (!m) return;
+  const lines = [
+    `# Meeting: ${m.name}`,
+    `**Datum:** ${m.date||'—'}`,
+    `**Teilnehmer:** ${m.participants||'—'}`,
+    '',
+    '## Protokoll',
+    '',
+    ...m.minutes.filter(x=>x).map(b => `- ${b}`),
+  ];
+  if (m.questions.filter(x=>x).length) {
+    lines.push('', '## Offene Fragen', '');
+    m.questions.filter(x=>x).forEach((q,i) => lines.push(`${i+1}. ${q}`));
+  }
+  dl('Minutes.md', lines.join('\n'), 'text/markdown');
+  toast('Minutes.md exportiert', 'ok');
+}
+
+function expDecisions() {
+  const m = cur(); if (!m) return;
+  const rows = [
+    csvRow(['Entscheidung','Begründung','Owner','Deadline','Quelle']),
+    ...m.decisions.map(d => csvRow([d.decision, d.reason, d.owner, d.deadline, d.source])),
+  ];
+  dl('DecisionLog.csv', rows.join('\n'), 'text/csv');
+  toast('DecisionLog.csv exportiert', 'ok');
+}
+
+function expActions() {
+  const m = cur(); if (!m) return;
+  const rows = [
+    csvRow(['Maßnahme','Owner','Deadline','Status','Quelle']),
+    ...m.actions.map(a => csvRow([a.action, a.owner, a.deadline, a.status, a.source])),
+  ];
+  dl('Actions.csv', rows.join('\n'), 'text/csv');
+  toast('Actions.csv exportiert', 'ok');
+}
+
+function expRisks() {
+  const m = cur(); if (!m) return;
+  const rows = [
+    csvRow(['Ampel','Risiko','Impact','Mitigation','Owner','Quelle']),
+    ...m.risks.map(r => csvRow([r.ampel, r.risiko, r.impact, r.mitigation, r.owner, r.source])),
+  ];
+  dl('Risks.csv', rows.join('\n'), 'text/csv');
+  toast('Risks.csv exportiert', 'ok');
+}
+
+function expFollowUp() {
+  const m = cur(); if (!m) return;
+  const open = m.actions.filter(a => a.status !== 'Erledigt');
+  const lines = [
+    '# Follow-Up E-Mail',
+    '',
+    `**Betreff:** Follow-Up: ${m.name} vom ${m.date||new Date().toLocaleDateString('de-DE')}`,
+    '',
+    'Liebes Team,',
+    '',
+    `vielen Dank für eure Teilnahme am Meeting **${m.name}** vom ${m.date||'—'}.`,
+    'Hier die wichtigsten Ergebnisse im Überblick:',
+    '',
+  ];
+  if (m.minutes.filter(x=>x).length) {
+    lines.push('## Highlights', '');
+    m.minutes.filter(x=>x).slice(0,5).forEach(b => lines.push(`- ${b}`));
+    lines.push('');
+  }
+  if (open.length) {
+    lines.push('## Offene Maßnahmen', '');
+    open.forEach(a => lines.push(
+      `- **${a.action||'[Maßnahme]'}** | Owner: ${a.owner||'[OFFEN]'} | Deadline: ${a.deadline||'[OFFEN]'} | Status: ${a.status}`
+    ));
+    lines.push('');
+  }
+  if (m.questions.filter(x=>x).length) {
+    lines.push('## Offene Fragen', '');
+    m.questions.filter(x=>x).forEach((q,i) => lines.push(`${i+1}. ${q}`));
+    lines.push('');
+  }
+  lines.push('Bitte prüft eure Punkte und gebt kurz Bescheid, wenn sich etwas ändert.', '', 'Viele Grüße');
+  dl('FollowUp_Email.md', lines.join('\n'), 'text/markdown');
+  toast('FollowUp_Email.md exportiert', 'ok');
+}
+
+// ────────────────────────────────────────────────────────── HELPERS
+function esc(s) {
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ────────────────────────────────────────────────────────── KEYBOARD
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  if (['INPUT','TEXTAREA','SELECT'].includes(tag)) return;
+  if (e.key==='n'||e.key==='N') { e.preventDefault(); newMeeting(); }
+  if (e.key==='1') switchTab('minutes');
+  if (e.key==='2') switchTab('decisions');
+  if (e.key==='3') switchTab('actions');
+  if (e.key==='4') switchTab('risks');
+  if (e.key==='5') switchTab('questions');
+  if (e.key==='Escape') document.activeElement?.blur();
+});
+
+// ────────────────────────────────────────────────────────── INIT
+renderSidebar();
+</script>
+</body>
+</html>
