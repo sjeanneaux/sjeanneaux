@@ -1,0 +1,96 @@
+---
+const termine = [
+  {
+    tag: '04',
+    monat: 'Mär',
+    title: 'Tag der offenen Tür',
+    beschreibung: 'Besuchen Sie unsere Schule und informieren Sie sich über alle Schulformen.',
+    ort: 'Schulgebäude, Frankfurter Str. 40',
+    uhrzeit: '10:00 – 15:00 Uhr',
+    typ: 'Veranstaltung',
+    highlight: true,
+  },
+  {
+    tag: '30',
+    monat: 'Apr',
+    title: 'Anmeldefrist Berufliches Gymnasium',
+    beschreibung: 'Letzter Tag für die Anmeldung zum Beruflichen Gymnasium (Schuljahr 2026/27).',
+    ort: 'Sekretariat',
+    uhrzeit: 'bis 13:00 Uhr',
+    typ: 'Frist',
+    highlight: false,
+  },
+  {
+    tag: '15',
+    monat: 'Mai',
+    title: 'Projektwoche "Nachhaltigkeit"',
+    beschreibung: 'Alle Klassen arbeiten eine Woche lang an Nachhaltigkeitsprojekten.',
+    ort: 'Gesamte Schule',
+    uhrzeit: 'ganztägig',
+    typ: 'Projekt',
+    highlight: false,
+  },
+  {
+    tag: '20',
+    monat: 'Jun',
+    title: 'Abschlussfeier 2026',
+    beschreibung: 'Feierliche Verabschiedung der Absolventinnen und Absolventen des Schuljahres 2025/26.',
+    ort: 'Aula der WKS',
+    uhrzeit: '18:00 Uhr',
+    typ: 'Feier',
+    highlight: false,
+  },
+];
+
+const typColors: Record<string, string> = {
+  Veranstaltung: 'bg-blue-100 text-blue-700',
+  Frist: 'bg-red-100 text-red-700',
+  Projekt: 'bg-green-100 text-green-700',
+  Feier: 'bg-amber-100 text-amber-700',
+};
+---
+
+<section id="termine" class="py-20 bg-white">
+  <div class="container">
+    <div class="text-center mb-14 animate-on-scroll">
+      <h2 class="section-heading">Termine & Veranstaltungen</h2>
+      <p class="section-subtitle">Aktuelle Termine rund um die Wilhelm-Knapp-Schule</p>
+    </div>
+
+    <div class="max-w-3xl mx-auto space-y-4">
+      {termine.map((t, i) => (
+        <div
+          class={`flex gap-5 p-5 rounded-2xl border transition-all hover:shadow-md animate-on-scroll ${t.highlight ? 'border-wks-gold/50 bg-amber-50/50' : 'bg-white border-border/60'}`}
+          style={`transition-delay: ${i * 100}ms`}
+        >
+          <!-- Date box -->
+          <div class={`shrink-0 w-16 text-center rounded-xl py-2 ${t.highlight ? 'bg-wks-gold text-white' : 'bg-wks-light text-wks-primary'}`}>
+            <div class="text-2xl font-extrabold leading-none">{t.tag}</div>
+            <div class="text-xs font-medium uppercase tracking-wide mt-0.5">{t.monat}</div>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-1.5">
+              <h3 class="font-bold text-wks-dark">{t.title}</h3>
+              <span class={`text-xs font-semibold px-2 py-0.5 rounded-full ${typColors[t.typ]}`}>
+                {t.typ}
+              </span>
+            </div>
+            <p class="text-sm text-muted-foreground mb-2">{t.beschreibung}</p>
+            <div class="flex flex-wrap gap-4 text-xs text-muted-foreground">
+              <span class="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                {t.ort}
+              </span>
+              <span class="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {t.uhrzeit}
+              </span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

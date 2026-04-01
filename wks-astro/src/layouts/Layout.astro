@@ -1,0 +1,104 @@
+---
+import '../styles/globals.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Wilhelm-Knapp-Schule Weilburg – Selbstständige Berufliche Schule des Landkreises Limburg-Weilburg. Abitur, Ausbildung, Fachschule und mehr seit 1905.',
+} = Astro.props;
+
+const fullTitle = title.includes('Wilhelm-Knapp-Schule')
+  ? title
+  : `${title} | Wilhelm-Knapp-Schule Weilburg`;
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a3d62" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <title>{fullTitle}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "Wilhelm-Knapp-Schule Weilburg",
+        "alternateName": "WKS",
+        "url": "https://www.wilhelm-knapp-schule.de",
+        "description": "Selbstständige Berufliche Schule des Landkreises Limburg-Weilburg",
+        "foundingDate": "1905",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Frankfurter Str. 40",
+          "postalCode": "35781",
+          "addressLocality": "Weilburg",
+          "addressCountry": "DE"
+        },
+        "telephone": "+49-6471-489-0",
+        "email": "verwaltung@wks-weilburg.de"
+      }
+    </script>
+  </head>
+  <body>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-wks-navy focus:text-white focus:rounded-md">
+      Zum Hauptinhalt springen
+    </a>
+    <Header />
+    <main id="main-content"><slot /></main>
+    <Footer />
+
+    <!-- Back to Top -->
+    <button
+      id="back-to-top"
+      aria-label="Nach oben scrollen"
+      class="fixed bottom-8 right-8 w-11 h-11 rounded-full bg-wks-navy text-white shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-wks-orange z-50 flex items-center justify-center"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m18 15-6-6-6 6"/>
+      </svg>
+    </button>
+
+    <script>
+      const btn = document.getElementById('back-to-top');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+          btn?.classList.remove('opacity-0', 'invisible');
+          btn?.classList.add('opacity-100', 'visible');
+        } else {
+          btn?.classList.add('opacity-0', 'invisible');
+          btn?.classList.remove('opacity-100', 'visible');
+        }
+      });
+      btn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+      // Scroll animations
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+      );
+      document.querySelectorAll('.animate-on-scroll').forEach((el) => observer.observe(el));
+    </script>
+  </body>
+</html>

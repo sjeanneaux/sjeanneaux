@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 210 47% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 47% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 47% 15%;
+    /* Navy #0a3d62 */
+    --primary: 205 84% 21%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 50% 95%;
+    --secondary-foreground: 205 84% 21%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 210 10% 45%;
+    /* Orange accent #e05c2d */
+    --accent: 18 74% 52%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 20% 88%;
+    --input: 210 20% 88%;
+    --ring: 205 84% 21%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { @apply scroll-smooth; scroll-padding-top: 80px; }
+  body { @apply bg-background text-foreground font-sans antialiased; }
+}
+
+@layer components {
+  .section-heading {
+    @apply text-3xl font-bold text-[#0a3d62] mb-3 relative inline-block;
+  }
+  .section-heading::after {
+    content: '';
+    @apply absolute bottom-[-8px] left-1/2 -translate-x-1/2 w-16 h-1 bg-[#e05c2d] rounded-full;
+  }
+  .section-subtitle {
+    @apply text-muted-foreground text-base mt-5 max-w-2xl mx-auto;
+  }
+}
+
+/* Scroll animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.animate-on-scroll.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
